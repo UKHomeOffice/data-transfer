@@ -1,0 +1,24 @@
+# Compiled python modules.
+*.pyc
+
+# Setuptools distribution folder.
+/dist/
+
+# Python egg metadata, regenerated from source files by setuptools.
+/*.egg-info
+
+.cache
+__pycache__
+
+# App
+celerybeat-schedule
+
+# Mac
+.DS_Store
+
+# Testing
+coverage.xml
+.coverage
+
+#logs
+*.log
