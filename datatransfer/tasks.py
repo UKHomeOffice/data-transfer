@@ -5,6 +5,7 @@ import logging
 from datatransfer import settings
 from datatransfer import storage #This is required
 from datatransfer import utils
+from datetime import datetime
 
 LOGGER = logging.getLogger(__name__)
 
@@ -94,7 +95,7 @@ def storage_type(path, read_write):
             return WRITESTORAGETYPE(conf)
 
 
-def process_files():
+def process_files(source=settings.SOURCE_PATH, dest=settings.DEST_PATH):
     """Processes the files found at the source storage.
 
     This task can be run to move the files from the source path to the new path.
@@ -103,13 +104,24 @@ def process_files():
 
     Parameters
     ----------
-    none
+    source: str
+        Provides the source path to process, defaults to environment setting
 
+    dest: str
+        Provides the destination path to process, defaults to the environment
+        setting.
     """
+
     LOGGER.info('Started processing files')
     try:
-        read_storage = storage_type(settings.SOURCE_PATH, 'r')
-        write_storage = storage_type(settings.DEST_PATH, 'w')
+        if settings.FOLDER_DATE_OUTPUT:
+            if dest.endswith('/'):
+                dest = dest + utils.get_date_based_folder()
+            else:
+                dest = dest + '/' + utils.get_date_based_folder()
+
+        read_storage = storage_type(source, 'r')
+        write_storage = storage_type(dest, 'w')
     except Exception as err:
         LOGGER.exception('Error with storage: %s', err)
         raise
