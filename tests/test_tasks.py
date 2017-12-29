@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import shutil
 import unittest
+from datetime import datetime, timedelta
 
 from datatransfer import settings
 from datatransfer.storage import FolderStorage
@@ -10,7 +11,7 @@ from datatransfer.storage import S3Storage
 from datatransfer.storage import SftpStorage
 from datatransfer.tasks import process_files
 from datatransfer import utils
-from datetime import datetime, timedelta
+
 
 # Create your tests here.
 TEST_FILE_LIST = ['test_csv.csv', 'test_json.json', 'test_xml.xml']
