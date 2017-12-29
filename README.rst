@@ -128,6 +128,8 @@ These control various application behaviour:
 +---------------------+----------------------+-----------+-----------------------------------+
 |PROCESS_INTERVAL     | 5                    | No        | Runs the task every (x) seconds.  |
 +---------------------+----------------------+-----------+-----------------------------------+
+|FOLDER_DATE_OUTPUT   | False                | No        | Moves files to YYYY / MM / DD     |
++---------------------+----------------------+-----------+-----------------------------------+
 |READ_STORAGE_TYPE    | See footnote         | Yes       | The type of read storage          |
 +---------------------+----------------------+-----------+-----------------------------------+
 |WRITE_STORAGE_TYPE   | See footnote         | Yes       | The type of write storage         |
@@ -200,7 +202,7 @@ To run the application from the command line:
 
 For production use we recommend running the application using PM2:
 
-  ``pm2 start bin/data-transfer-start --name data-transfer --interpreter python``
+  ``pm2 start bin/data-transfer --name data-transfer --interpreter python``
 
 
 Contributing

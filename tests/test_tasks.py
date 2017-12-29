@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import shutil
 import unittest
+from datetime import datetime, timedelta
 
 from datatransfer import settings
 from datatransfer.storage import FolderStorage
@@ -9,6 +10,8 @@ from datatransfer.storage import FtpStorage
 from datatransfer.storage import S3Storage
 from datatransfer.storage import SftpStorage
 from datatransfer.tasks import process_files
+from datatransfer import utils
+
 
 # Create your tests here.
 TEST_FILE_LIST = ['test_csv.csv', 'test_json.json', 'test_xml.xml']
@@ -154,7 +157,7 @@ class TestStorage(unittest.TestCase):
             'path': './tests/files/done'
         }
         self.setup()
-        process_files()
+        process_files('tests/files', 'tests/files/done')
         storage = FolderStorage(conf)
         result = storage.list_dir()
         self.assertListEqual(sorted(result), sorted(TEST_FILE_LIST))
@@ -174,6 +177,17 @@ class TestStorage(unittest.TestCase):
 
         result = storage.list_dir()
         self.assertEqual(len(result), 0)
+
+
+    def test_folder_date_path(self):
+        date_folder = utils.get_date_based_folder()
+        current_date = datetime.utcnow().strftime("%Y%/%m%/%d")
+        self.assertEqual(date_folder,current_date)
+
+    def test_new_day(self):
+        self.assertTrue(utils.check_new_day(datetime.utcnow().date() - timedelta(days=1)))
+        self.assertFalse(utils.check_new_day(datetime.utcnow().date()))
+
 
     def teardown(self):
         """"Teardown: also tests the folder storage delete function"""

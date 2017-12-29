@@ -39,6 +39,7 @@ WRITE_AWS_S3_HOST = os.environ.get('AWS_S3_HOST', 'http://localhost:8000')
 #Max number of files to process at a time.
 MAX_FILES_BATCH = int(os.environ.get('MAX_FILES_BATCH', 5))
 PROCESS_INTERVAL = int(os.environ.get('PROCESS_INTERVAL', 5))
+FOLDER_DATE_OUTPUT = os.environ.get('FOLDER_DATE_OUTPUT', False)
 
 #  Loggin config
 DICTLOGCONFIG = {
