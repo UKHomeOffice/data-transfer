@@ -48,8 +48,8 @@ class FolderStorage:
         except OSError:
             LOGGER.error('Folder - Error trying to read path ' + self.path)
             raise
-        except Exception as e:
-            LOGGER.exception('Folder - Unexpected error ' + e.message)
+        except Exception as err:
+            LOGGER.exception('Folder - Unexpected error ' + err.message)
             raise
 
     def read_file(self, file_name):
@@ -75,8 +75,8 @@ class FolderStorage:
             LOGGER.error(
                 'Folder - Error trying to read file ' + os.path.join(self.path, file_name))
             raise
-        except Exception as e:
-            LOGGER.exception('Folder - Unexpected error ' + e.message )
+        except Exception as err:
+            LOGGER.exception('Folder - Unexpected error ' + err.message )
             raise
 
     def write_file(self, file_name, content):
@@ -109,8 +109,8 @@ class FolderStorage:
             LOGGER.error('Folder - Error trying to write file '
                          + os.path.join(self.path, file_name))
             raise
-        except Exception as e:
-            LOGGER.exception('Folder - Unexpected error ' + e.message)
+        except Exception as err:
+            LOGGER.exception('Folder - Unexpected error ' + err.message)
             raise
 
     def delete_file(self, file_name):
@@ -140,8 +140,8 @@ class FolderStorage:
                 LOGGER.error('Folder - Error trying to delete file '
                              + os.path.join(self.path, file_name))
                 raise
-        except Exception as e:
-            LOGGER.exception('Folder - Unexpected error ' + e.message)
+        except Exception as err:
+            LOGGER.exception('Folder - Unexpected error ' + err.message)
             raise
 
 class FtpStorage:
@@ -199,8 +199,8 @@ class FtpStorage:
         except ftplib.all_errors as err:
             LOGGER.error('FTP - Error checking ftp directory ' + str(err))
             raise
-        except Exception as e:
-            LOGGER.exception('FTP - Unexpected error ' + e.message)
+        except Exception as err:
+            LOGGER.exception('FTP - Unexpected error ' + err.message)
             raise
 
     def check_dir_path(self, directory):
@@ -237,8 +237,8 @@ class FtpStorage:
         except ftplib.all_errors as err:
             LOGGER.error('FTP - Error listing ftp directory contents' + str(err))
             raise
-        except Exception as e:
-            LOGGER.exception('FTP - Unexpected error ' + e.message)
+        except Exception as err:
+            LOGGER.exception('FTP - Unexpected error ' + err.message)
             raise
 
     def read_file(self, file_name):
@@ -269,8 +269,8 @@ class FtpStorage:
             LOGGER.error('FTP - Error reading file from ftp server '
                          + os.path.join(self.path, file_name)  + str(err))
             raise
-        except Exception as e:
-            LOGGER.exception('FTP - Unexpected error ' + e.message)
+        except Exception as err:
+            LOGGER.exception('FTP - Unexpected error ' + err.message)
             raise
 
     def write_file(self, file_name, content):
@@ -301,8 +301,8 @@ class FtpStorage:
             LOGGER.error('FTP - Error writing file to ftp server '
                          + os.path.join(self.path, file_name)  + str(err))
             raise
-        except Exception as e:
-            LOGGER.exception('FTP - Unexpected error ' + e.message)
+        except Exception as err:
+            LOGGER.exception('FTP - Unexpected error ' + err.message)
             raise
 
     def delete_file(self, file_name):
@@ -329,8 +329,8 @@ class FtpStorage:
             LOGGER.error('FTP - Error deleting file from ftp server '
                          + os.path.join(self.path, file_name)  + str(err))
             raise
-        except Exception as e:
-            LOGGER.exception('FTP - Unexpected error ' + e.message)
+        except Exception as err:
+            LOGGER.exception('FTP - Unexpected error ' + err.message)
             raise
 
 class SftpStorage:
@@ -412,8 +412,8 @@ class SftpStorage:
         except IOError as err:
             LOGGER.error('Error checking ftp directory ' + str(err))
             raise
-        except Exception as e:
-            LOGGER.exception('sFTP - Unexpected error ' + e.message)
+        except Exception as err:
+            LOGGER.exception('sFTP - Unexpected error ' + err.message)
             raise
 
     def check_dir_path(self, directory):
@@ -458,8 +458,8 @@ class SftpStorage:
         except IOError as err:
             LOGGER.error('sFTP - Error listing sftp directory contents' + str(err))
             raise
-        except Exception as e:
-            LOGGER.exception('sFTP - Unexpected error ' + e.message)
+        except Exception as err:
+            LOGGER.exception('sFTP - Unexpected error ' + err.message)
             raise
 
     def read_file(self, file_name):
@@ -491,8 +491,8 @@ class SftpStorage:
                 LOGGER.error('sFTP - Error reading file from sftp server '
                              + os.path.join(self.path, file_name) + str(err))
                 raise
-        except Exception as e:
-            LOGGER.exception('sFTP - Unexpected error ' + e.message)
+        except Exception as err:
+            LOGGER.exception('sFTP - Unexpected error ' + err.message)
             raise
 
     def write_file(self, file_name, content):
@@ -527,8 +527,8 @@ class SftpStorage:
                 LOGGER.error('sFTP - Error writing file to sftp server '
                              + os.path.join(self.path, file_name)  + str(err))
                 raise
-        except Exception as e:
-            LOGGER.exception('sFTP - Unexpected error ' + e.message)
+        except Exception as err:
+            LOGGER.exception('sFTP - Unexpected error ' + err.message)
             raise
 
     def delete_file(self, file_name):
@@ -555,8 +555,8 @@ class SftpStorage:
             LOGGER.error('sFTP - Error deleting file from ftp server '
                          + os.path.join(self.path, file_name)  + str(err))
             raise
-        except Exception as e:
-            LOGGER.exception('sFTP - Unexpected error ' + e.message)
+        except Exception as err:
+            LOGGER.exception('sFTP - Unexpected error ' + err.message)
             raise
 
 def get_s3_resource(conf):
@@ -646,8 +646,8 @@ class S3Storage:
         except botocore.exceptions.ClientError as err:
             LOGGER.error('S3 - Error listing S3 directory ' + str(err))
             raise
-        except Exception as e:
-            LOGGER.exception('S3 - Unexpected error ' + e.message)
+        except Exception as err:
+            LOGGER.exception('S3 - Unexpected error ' + err.message)
             raise
 
     def read_file(self, file_name):
@@ -674,8 +674,8 @@ class S3Storage:
         except botocore.exceptions.ClientError as err:
             LOGGER.error('S3 - Error listing S3 directory ' + str(err))
             raise
-        except Exception as e:
-            LOGGER.exception('S3 - Unexpected error ' + e.message)
+        except Exception as err:
+            LOGGER.exception('S3 - Unexpected error ' + err.message)
             raise
 
     def write_file(self, file_name, content):
@@ -704,8 +704,8 @@ class S3Storage:
         except botocore.exceptions.ClientError as err:
             LOGGER.error('S3 - Error listing S3 directory ' + str(err))
             raise
-        except Exception as e:
-            LOGGER.exception('S3 - Unexpected error ' + e.message)
+        except Exception as err:
+            LOGGER.exception('S3 - Unexpected error ' + err.message)
             raise
 
     def delete_file(self, file_name):
@@ -737,6 +737,6 @@ class S3Storage:
         except botocore.exceptions.ClientError as err:
             LOGGER.error('S3 - Error listing S3 directory ' + str(err))
             raise
-        except Exception as e:
-            LOGGER.exception('S3 - Unexpected error ' + e.message)
+        except Exception as err:
+            LOGGER.exception('S3 - Unexpected error ' + err.message)
             raise

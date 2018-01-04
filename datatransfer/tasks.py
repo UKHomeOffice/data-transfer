@@ -122,8 +122,8 @@ def process_files(source=settings.SOURCE_PATH, dest=settings.DEST_PATH):
 
         read_storage = storage_type(source, 'r')
         write_storage = storage_type(dest, 'w')
-    except Exception as e:
-        LOGGER.exception('Main - Error with storage ' + e.message)
+    except Exception as err:
+        LOGGER.exception('Main - Error with storage ' + err.message)
         raise
     files = read_storage.list_dir()[:settings.MAX_FILES_BATCH]
     for file_name in files:
@@ -131,6 +131,6 @@ def process_files(source=settings.SOURCE_PATH, dest=settings.DEST_PATH):
             data = read_storage.read_file(file_name)
             write_storage.write_file(file_name, data)
             read_storage.delete_file(file_name)
-        except Exception as e:
-            LOGGER.exception('Main - Error with file read/write :' + e.message)
+        except Exception as err:
+            LOGGER.exception('Main - Error with file read/write :' + err.message)
             raise
