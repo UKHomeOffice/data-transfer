@@ -115,10 +115,11 @@ suggested in this guide.
 Application settings
 """"""""""""""""""""
 
-These control various application behaviour:
+These control various application behaviour, where a variable is not required
+the deafult value is used:
 
 +---------------------+----------------------+-----------+-----------------------------------+
-|Environment Variable | Example              | Required  | Description.                      |
+|Environment Variable | Example (Default)    | Required  | Description.                      |
 +=====================+======================+===========+===================================+
 |INGEST_SOURCE_PATH   | /upload/files        | Yes       | Source path                       |
 +---------------------+----------------------+-----------+-----------------------------------+
@@ -129,6 +130,8 @@ These control various application behaviour:
 |PROCESS_INTERVAL     | 5                    | No        | Runs the task every (x) seconds.  |
 +---------------------+----------------------+-----------+-----------------------------------+
 |FOLDER_DATE_OUTPUT   | False                | No        | Moves files to YYYY / MM / DD     |
++---------------------+----------------------+-----------+-----------------------------------+
+|LOG_LEVEL            | INFO                 | No        | Moves files to YYYY / MM / DD     |
 +---------------------+----------------------+-----------+-----------------------------------+
 |READ_STORAGE_TYPE    | See footnote         | Yes       | The type of read storage          |
 +---------------------+----------------------+-----------+-----------------------------------+
@@ -192,17 +195,36 @@ configure the settings associated with the target storage type.
 |WRITE_AWS_S3_HOST           | http://localhost:8000 | URL of S3               |
 +----------------------------+-----------------------+-------------------------+
 
+
 Running the application
 -----------------------
 
 To run the application from the command line:
 
+For pip installed versions:
+
   ``data-transfer``
 
+Calling the applicaiton directly:
+
+  ``python bin/data-transfer``
 
 For production use we recommend running the application using PM2:
 
-  ``pm2 start bin/data-transfer --name data-transfer --interpreter python``
+  ``pm2 start ecosystem.config.js --only data-transfer``
+
+Envirnment variables required should be changed in the ecosystem file before
+running PM2.
+
+Running Multi-Instances
+-----------------------
+
+To run more that one instance of the application with different config settings,
+you will need to change/add additional services into the ecosystem config file.
+
+See here for examples:
+
+http://pm2.keymetrics.io/docs/usage/application-declaration/#process-file
 
 
 Contributing
