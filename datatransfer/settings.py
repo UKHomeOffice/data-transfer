@@ -40,6 +40,7 @@ WRITE_AWS_S3_HOST = os.environ.get('AWS_S3_HOST', 'http://localhost:8000')
 MAX_FILES_BATCH = int(os.environ.get('MAX_FILES_BATCH', 25))
 PROCESS_INTERVAL = int(os.environ.get('PROCESS_INTERVAL', 5))
 FOLDER_DATE_OUTPUT = os.environ.get('FOLDER_DATE_OUTPUT', False)
+LOG_LEVEL = os.environ.get('LOG_LEVEL', 'DEBUG')
 
 #  Loggin config
 DICTLOGCONFIG = {
@@ -53,7 +54,7 @@ DICTLOGCONFIG = {
     },
     'root':  {
         'handlers':   ['fileHandler'],
-        'level': 'DEBUG'
+        'level': LOG_LEVEL
     },
     'formatters': {
         'myFormatter': {

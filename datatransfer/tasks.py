@@ -1,11 +1,10 @@
 """Tasks module"""
 
 import logging
-
 from datatransfer import settings
 from datatransfer import storage #This is required
 from datatransfer import utils
-from datetime import datetime
+
 
 LOGGER = logging.getLogger(__name__)
 
