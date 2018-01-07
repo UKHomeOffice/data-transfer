@@ -111,7 +111,7 @@ def process_files(source=settings.SOURCE_PATH, dest=settings.DEST_PATH):
         setting.
     """
 
-    LOGGER.info('Started processing files')
+    LOGGER.info('Main - Started processing files')
     try:
         if settings.FOLDER_DATE_OUTPUT:
             if dest.endswith('/'):
@@ -122,7 +122,7 @@ def process_files(source=settings.SOURCE_PATH, dest=settings.DEST_PATH):
         read_storage = storage_type(source, 'r')
         write_storage = storage_type(dest, 'w')
     except Exception as err:
-        LOGGER.exception('Error with storage: %s', err)
+        LOGGER.exception('Main - Error with storage ' + err.message)
         raise
     files = read_storage.list_dir()[:settings.MAX_FILES_BATCH]
     for file_name in files:
@@ -131,5 +131,5 @@ def process_files(source=settings.SOURCE_PATH, dest=settings.DEST_PATH):
             write_storage.write_file(file_name, data)
             read_storage.delete_file(file_name)
         except Exception as err:
-            LOGGER.exception('Error with file read/write: %s', err)
+            LOGGER.exception('Main - Error with file read/write :' + err.message)
             raise

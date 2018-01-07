@@ -14,22 +14,22 @@ Installing and getting started
 The application should be installed using ``pip3`` (or ``pip`` for Python 2.7).
 
 To install from a private PyPI server we suggest using ``~/.pypirc`` to configure
-your private PyPI connection details.
+your private PyPI connection details::
 
-  ``pip3 install data-transfer --extra-index-url <Repo-URL>``
+    pip3 install data-transfer --extra-index-url <Repo-URL>
 
 After installing and setting the configuration settings, the application can be
-started with the following command:
+started with the following command::
 
-  ``data-transfer``
+    data-transfer
 
 
 Developing
 ----------
 
-Start by cloning the project:
+Start by cloning the project::
 
-  ``git clone git@github.com:UKHomeOffice/data-transfer.git``
+    git clone git@github.com:UKHomeOffice/data-transfer.git
 
 Ensure that ``python3`` is installed and on your ``path``.
 
@@ -43,20 +43,20 @@ Using venv
 """"""""""
 
 To install the app using the standard ``python3 venv`` run the following
-commands from the project root folder:
+commands from the project root folder::
 
-  ``python3 -m venv ~/.virtualenvs/data-transfer``
-  ``source ~/.virtualenvs/data-transfer/bin/activate``
-  ``pip3 install -e . -r requirements.txt``
+    python3 -m venv ~/.virtualenvs/data-transfer
+    source ~/.virtualenvs/data-transfer/bin/activate
+    pip3 install -e . -r requirements.txt
 
 
 Using virtualenvwrapper
 """""""""""""""""""""""
 
-Alternatively, if you are using ``virtualenvwrapper`` then run the following:
+Alternatively, if you are using ``virtualenvwrapper`` then run the following::
 
-  ``mkvirtualenv data-transfer -p python3``
-  ``pip3 install -e . -r requirements.txt``
+    mkvirtualenv data-transfer -p python3
+    pip3 install -e . -r requirements.txt
 
 
 Dependancies for local testing
@@ -64,19 +64,24 @@ Dependancies for local testing
 
 The project's tests require the following dependencies:
 
-- An AWS S3 bucket or a mock
-- An FTP server
-- An SFTP server
+* An AWS S3 bucket or a mock
+* An FTP server
+* An SFTP server
 
-For local development and testing, we suggest running Docker images.
+For local development and testing, we suggest running Docker images. The following
+will meet the test dependencies and match the default env vars::
+
+    docker run -d --name s3server -p 8000:8000 scality/s3server
+    docker run -d --name ftp_server -p 21:21 -p 30000-30009:30000-30009 onekilo79/ftpd_test
+    docker run -p 2222:22 -d atmoz/sftp foo:pass:::upload
 
 Test
 """"
 
 Once the application is installed and the dependencies are in place, run the
-tests:
+tests:::
 
-  ``pytest tests``
+    pytest tests
 
 
 Building & publishing
@@ -84,9 +89,9 @@ Building & publishing
 
 This project uses ``setuptools`` to build the distributable package.
 
-Remember to update the ``version`` in ``setup.py`` before building the package.
+Remember to update the ``version`` in ``setup.py`` before building the package::
 
-  ``python setup.py sdist``
+    python setup.py sdist
 
 This will create a ``.tar.gz`` distributable package in ``dist/``. This should be
 uploaded to an appropriate PyPI registry.
@@ -97,9 +102,9 @@ Deploying
 The application should be installed using ``pip3`` (or ``pip`` for Python 2.7).
 
 If installing from a private PyPI server then we suggest using ``~/.pypirc`` to
-configure your private PyPI connection details.
+configure your private PyPI connection details::
 
-  ``pip3 install data-transfer --extra-index-url <Repo-URL>``
+    pip3 install data-transfer --extra-index-url <Repo-URL>
 
 
 Configuration
@@ -115,8 +120,8 @@ suggested in this guide.
 Application settings
 """"""""""""""""""""
 
-These control various application behaviour, where a variable is not required
-the deafult value is used:
+These control various application behaviours, where a variable is not required
+the default value is used:
 
 +---------------------+----------------------+-----------+-----------------------------------+
 |Environment Variable | Example (Default)    | Required  | Description.                      |
@@ -201,18 +206,20 @@ Running the application
 
 To run the application from the command line:
 
-For pip installed versions:
+For pip installed versions::
 
-  ``data-transfer``
+    data-transfer
 
-Calling the application directly:
+Calling the applicaiton directly::
 
-  ``python bin/data-transfer``
+
+    python bin/data-transfer
+
 
 For production use we recommend running the application using PM2, please ensure
-that PM2 is installed globally before running this command:
+that PM2 is installed globally before running this command::
 
-  ``pm2 start ecosystem.config.js --only data-transfer``
+    pm2 start ecosystem.config.js --only data-transfer
 
 Envirnment variables required should be changed in the ecosystem file before
 running PM2.
@@ -225,7 +232,7 @@ you will need to change/add additional services into the ecosystem config file.
 
 See here for examples:
 
-http://pm2.keymetrics.io/docs/usage/application-declaration/#process-file
+<http://pm2.keymetrics.io/docs/usage/application-declaration/#process-file>
 
 
 Contributing
@@ -235,14 +242,14 @@ This project is Open source and we welcome ocntributions to and suggestions to
 improve the application. Please raise issues in the usual way on Github and for
 contributing code:
 
-- Fork the repo github
-- Clone the project locally
-- Commit your changes to your own branch
-- Push your work back to your fork
-- Submit a Pull Request so that we can review the changes
+* Fork the repo github
+* Clone the project locally
+* Commit your changes to your own branch
+* Push your work back to your fork
+* Submit a Pull Request so that we can review the changes
 
 
 Licensing
 """""""""
 
-This application is released under the [BSD license](LICENSE.txt).
+This application is released under the BSD license <LICENSE.txt>.
