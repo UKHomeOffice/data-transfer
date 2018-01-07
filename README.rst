@@ -14,12 +14,12 @@ Installing and getting started
 The application should be installed using ``pip3`` (or ``pip`` for Python 2.7).
 
 To install from a private PyPI server we suggest using ``~/.pypirc`` to configure
-your private PyPI connection details.::
+your private PyPI connection details::
 
     pip3 install data-transfer --extra-index-url <Repo-URL>
 
 After installing and setting the configuration settings, the application can be
-started with the following command:::
+started with the following command::
 
     data-transfer
 
@@ -27,7 +27,7 @@ started with the following command:::
 Developing
 ----------
 
-Start by cloning the project:::
+Start by cloning the project::
 
     git clone git@github.com:UKHomeOffice/data-transfer.git
 
@@ -43,7 +43,7 @@ Using venv
 """"""""""
 
 To install the app using the standard ``python3 venv`` run the following
-commands from the project root folder:::
+commands from the project root folder::
 
     python3 -m venv ~/.virtualenvs/data-transfer
     source ~/.virtualenvs/data-transfer/bin/activate
@@ -53,7 +53,7 @@ commands from the project root folder:::
 Using virtualenvwrapper
 """""""""""""""""""""""
 
-Alternatively, if you are using ``virtualenvwrapper`` then run the following:::
+Alternatively, if you are using ``virtualenvwrapper`` then run the following::
 
     mkvirtualenv data-transfer -p python3
     pip3 install -e . -r requirements.txt
@@ -69,7 +69,7 @@ The project's tests require the following dependencies:
 * An SFTP server
 
 For local development and testing, we suggest running Docker images. The following
-will meet the test dependencies and match the default env vars.::
+will meet the test dependencies and match the default env vars::
 
     docker run -d --name s3server -p 8000:8000 scality/s3server
     docker run -d --name ftp_server -p 21:21 -p 30000-30009:30000-30009 onekilo79/ftpd_test
@@ -89,7 +89,7 @@ Building & publishing
 
 This project uses ``setuptools`` to build the distributable package.
 
-Remember to update the ``version`` in ``setup.py`` before building the package.::
+Remember to update the ``version`` in ``setup.py`` before building the package::
 
     python setup.py sdist
 
@@ -102,7 +102,7 @@ Deploying
 The application should be installed using ``pip3`` (or ``pip`` for Python 2.7).
 
 If installing from a private PyPI server then we suggest using ``~/.pypirc`` to
-configure your private PyPI connection details.::
+configure your private PyPI connection details::
 
     pip3 install data-transfer --extra-index-url <Repo-URL>
 
@@ -206,15 +206,15 @@ Running the application
 
 To run the application from the command line:
 
-For pip installed versions:::
+For pip installed versions::
 
     data-transfer
 
-Calling the applicaiton directly:::
+Calling the applicaiton directly::
 
     python bin/data-transfer
 
-For production use we recommend running the application using PM2:::
+For production use we recommend running the application using PM2::
 
     pm2 start ecosystem.config.js --only data-transfer
 
