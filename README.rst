@@ -79,7 +79,7 @@ Test
 """"
 
 Once the application is installed and the dependencies are in place, run the
-tests:::
+tests::
 
     pytest tests
 
@@ -252,4 +252,6 @@ contributing code:
 Licensing
 """""""""
 
-This application is released under the BSD license <LICENSE.txt>.
+This application is released under the BSD license `license`_.
+
+.. _license: LICENSE.txt
