@@ -11,8 +11,8 @@ module.exports = {
       script    : "bin/data-transfer",
       interpreter: "python",
       env: {
-        INGEST_DEST_PATH : "/Volumes/USB1/upload/files/done",
-        INGEST_SOURCE_PATH : "/Volumes/USB1/upload/files",
+        INGEST_DEST_PATH : "tests/files/done",
+        INGEST_SOURCE_PATH : "tests/files",
         WRITE_STORAGE_TYPE : "datatransfer.storage.FolderStorage",
         READ_STORAGE_TYPE : "datatransfer.storage.FolderStorage",
         PROCESS_INTERVAL : 5,
@@ -23,7 +23,7 @@ module.exports = {
         READ_AWS_ACCESS_KEY_ID : "accessKey1"
         READ_AWS_S3_HOST : "http://localhost:8000"
         WRITE_AWS_SECRET_ACCESS_KEY : "verysecretkey"
-        WRITE_AWS_S3_BUCKET_NAME : "ws-ingest"
+        WRITE_AWS_S3_BUCKET_NAME : "aws-ingest"
         WRITE_AWS_ACCESS_KEY_ID : "accessKey1"
         WRITE_AWS_S3_HOST : "http://localhost:8000"
         READ_FTP_PASSWORD : "pass"
@@ -42,8 +42,8 @@ module.exports = {
       script    : "bin/data-transfer",
       interpreter: "python",
       env: {
-        INGEST_DEST_PATH : "/Volumes/USB1/upload/files/done",
-        INGEST_SOURCE_PATH : "/Volumes/USB1/upload/files",
+        INGEST_DEST_PATH : "upload/files/done",
+        INGEST_SOURCE_PATH : "upload/files",
         WRITE_STORAGE_TYPE : "datatransfer.storage.FtpStorage",
         READ_STORAGE_TYPE : "datatransfer.storage.FtpStorage",
         PROCESS_INTERVAL : 5,
@@ -54,7 +54,7 @@ module.exports = {
         READ_AWS_ACCESS_KEY_ID : "accessKey1"
         READ_AWS_S3_HOST : "http://localhost:8000"
         WRITE_AWS_SECRET_ACCESS_KEY : "verysecretkey"
-        WRITE_AWS_S3_BUCKET_NAME : "ws-ingest"
+        WRITE_AWS_S3_BUCKET_NAME : "aws-ingest"
         WRITE_AWS_ACCESS_KEY_ID : "accessKey1"
         WRITE_AWS_S3_HOST : "http://localhost:8000"
         READ_FTP_PASSWORD : "pass"
