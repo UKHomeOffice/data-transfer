@@ -249,4 +249,6 @@ contributing code:
 Licensing
 """""""""
 
-This application is released under the BSD license <https:/LICENSE.txt>.
+This application is released under the BSD license `license`_.
+
+.. _license: LICENSE.txt
