@@ -18,22 +18,22 @@ module.exports = {
         PROCESS_INTERVAL : 5,
         MAX_FILES_BATCH : 5,
         FOLDER_DATE_OUTPUT : "False",
-        READ_AWS_SECRET_ACCESS_KEY : "verysecretkey"
-        READ_AWS_S3_BUCKET_NAME : "aws-ingest"
-        READ_AWS_ACCESS_KEY_ID : "accessKey1"
-        READ_AWS_S3_HOST : "http://localhost:8000"
-        WRITE_AWS_SECRET_ACCESS_KEY : "verysecretkey"
-        WRITE_AWS_S3_BUCKET_NAME : "ws-ingest"
-        WRITE_AWS_ACCESS_KEY_ID : "accessKey1"
-        WRITE_AWS_S3_HOST : "http://localhost:8000"
-        READ_FTP_PASSWORD : "pass"
-        READ_FTP_PORT : 21
-        READ_FTP_HOST : "localhost"
-        READ_FTP_USER : "user"
-        WRITE_FTP_USER : "user"
-        WRITE_FTP_PASSWORD : "pass"
-        WRITE_FTP_HOST : "localhost"
-        WRITE_FTP_PORT : "21"
+        READ_AWS_SECRET_ACCESS_KEY : "verysecretkey",
+        READ_AWS_S3_BUCKET_NAME : "aws-ingest",
+        READ_AWS_ACCESS_KEY_ID : "accessKey1",
+        READ_AWS_S3_HOST : "http://localhost:8000",
+        WRITE_AWS_SECRET_ACCESS_KEY : "verysecretkey",
+        WRITE_AWS_S3_BUCKET_NAME : "ws-ingest",
+        WRITE_AWS_ACCESS_KEY_ID : "accessKey1",
+        WRITE_AWS_S3_HOST : "http://localhost:8000",
+        READ_FTP_PASSWORD : "pass",
+        READ_FTP_PORT : 21,
+        READ_FTP_HOST : "localhost",
+        READ_FTP_USER : "user",
+        WRITE_FTP_USER : "user",
+        WRITE_FTP_PASSWORD : "pass",
+        WRITE_FTP_HOST : "localhost",
+        WRITE_FTP_PORT : "21",
       }
     },
     {
@@ -49,22 +49,22 @@ module.exports = {
         PROCESS_INTERVAL : 5,
         MAX_FILES_BATCH : 5,
         FOLDER_DATE_OUTPUT : "False",
-        READ_AWS_SECRET_ACCESS_KEY : "verysecretkey"
-        READ_AWS_S3_BUCKET_NAME : "aws-ingest"
-        READ_AWS_ACCESS_KEY_ID : "accessKey1"
-        READ_AWS_S3_HOST : "http://localhost:8000"
-        WRITE_AWS_SECRET_ACCESS_KEY : "verysecretkey"
-        WRITE_AWS_S3_BUCKET_NAME : "ws-ingest"
-        WRITE_AWS_ACCESS_KEY_ID : "accessKey1"
-        WRITE_AWS_S3_HOST : "http://localhost:8000"
-        READ_FTP_PASSWORD : "pass"
-        READ_FTP_PORT : 21
-        READ_FTP_HOST : "localhost"
-        READ_FTP_USER : "user"
-        WRITE_FTP_USER : "user"
-        WRITE_FTP_PASSWORD : "pass"
-        WRITE_FTP_HOST : "localhost"
-        WRITE_FTP_PORT : "21"
+        READ_AWS_SECRET_ACCESS_KEY : "verysecretkey",
+        READ_AWS_S3_BUCKET_NAME : "aws-ingest",
+        READ_AWS_ACCESS_KEY_ID : "accessKey1",
+        READ_AWS_S3_HOST : "http://localhost:8000",
+        WRITE_AWS_SECRET_ACCESS_KEY : "verysecretkey",
+        WRITE_AWS_S3_BUCKET_NAME : "ws-ingest",
+        WRITE_AWS_ACCESS_KEY_ID : "accessKey1",
+        WRITE_AWS_S3_HOST : "http://localhost:8000",
+        READ_FTP_PASSWORD : "pass",
+        READ_FTP_PORT : 21,
+        READ_FTP_HOST : "localhost",
+        READ_FTP_USER : "user",
+        WRITE_FTP_USER : "user",
+        WRITE_FTP_PASSWORD : "pass",
+        WRITE_FTP_HOST : "localhost",
+        WRITE_FTP_PORT : "21",
       }
     }
   ]
