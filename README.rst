@@ -131,7 +131,7 @@ the deafult value is used:
 +---------------------+----------------------+-----------+-----------------------------------+
 |FOLDER_DATE_OUTPUT   | False                | No        | Moves files to YYYY / MM / DD     |
 +---------------------+----------------------+-----------+-----------------------------------+
-|LOG_LEVEL            | INFO                 | No        | Moves files to YYYY / MM / DD     |
+|LOG_LEVEL            | INFO                 | No        | Log level                         |
 +---------------------+----------------------+-----------+-----------------------------------+
 |READ_STORAGE_TYPE    | See footnote         | Yes       | The type of read storage          |
 +---------------------+----------------------+-----------+-----------------------------------+
@@ -205,11 +205,12 @@ For pip installed versions:
 
   ``data-transfer``
 
-Calling the applicaiton directly:
+Calling the application directly:
 
   ``python bin/data-transfer``
 
-For production use we recommend running the application using PM2:
+For production use we recommend running the application using PM2, please ensure
+that PM2 is installed globally before running this command:
 
   ``pm2 start ecosystem.config.js --only data-transfer``
 
