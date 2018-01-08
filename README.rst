@@ -138,6 +138,8 @@ the default value is used:
 +---------------------+----------------------+-----------+-----------------------------------+
 |LOG_LEVEL            | INFO                 | No        | Log level                         |
 +---------------------+----------------------+-----------+-----------------------------------+
+|LOG_FILE_NAME        | data-transfer.log    | Yes       | Filename for log output           |
++---------------------+----------------------+-----------+-----------------------------------+
 |READ_STORAGE_TYPE    | See footnote         | Yes       | The type of read storage          |
 +---------------------+----------------------+-----------+-----------------------------------+
 |WRITE_STORAGE_TYPE   | See footnote         | Yes       | The type of write storage         |
@@ -220,7 +222,7 @@ that PM2 is installed globally before running this command::
     pm2 start ecosystem.config.js --only data-transfer
 
 Envirnment variables required should be changed in the ecosystem file before
-running PM2.
+running PM2. It is also recommended to run pm2 from within a python virtual env.
 
 Running Multi-Instances
 -----------------------
