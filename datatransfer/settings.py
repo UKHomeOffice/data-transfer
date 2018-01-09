@@ -7,8 +7,8 @@ import logging.config
 
 
 #  Source paths and locations for storage.
-SOURCE_PATH = os.environ.get('INGEST_SOURCE_PATH', 'tests/files')
-DEST_PATH = os.environ.get('INGEST_DEST_PATH', 'tests/files/done')
+INGEST_SOURCE_PATH = os.environ.get('INGEST_SOURCE_PATH', 'tests/files')
+INGEST_DEST_PATH = os.environ.get('INGEST_DEST_PATH', 'tests/files/done')
 
 #  Storage types for read and write. I.e Source and Destination
 READ_STORAGE_TYPE = os.environ.get('READ_STORAGE_TYPE', 'datatransfer.storage.FolderStorage')
@@ -41,6 +41,7 @@ MAX_FILES_BATCH = int(os.environ.get('MAX_FILES_BATCH', 25))
 PROCESS_INTERVAL = int(os.environ.get('PROCESS_INTERVAL', 5))
 FOLDER_DATE_OUTPUT = os.environ.get('FOLDER_DATE_OUTPUT', False)
 LOG_LEVEL = os.environ.get('LOG_LEVEL', 'DEBUG')
+LOG_FILE_NAME = os.environ.get('LOG_FILE_NAME', 'data-transfer-app.log')
 
 #  Loggin config
 DICTLOGCONFIG = {
@@ -49,7 +50,7 @@ DICTLOGCONFIG = {
         'fileHandler': {
             'class': 'logging.FileHandler',
             'formatter': 'myFormatter',
-            'filename': 'data-transfer-app.log'
+            'filename': LOG_FILE_NAME
         }
     },
     'root':  {

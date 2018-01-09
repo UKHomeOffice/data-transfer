@@ -1,3 +1,4 @@
+"""Test module"""
 import os
 from pathlib import Path
 import shutil
@@ -43,15 +44,16 @@ class TestStorage(unittest.TestCase):
     def test_read_delete_from_s3_bucket(self):
         """Tests the read and delete from the S3 bucket"""
         conf = {
-            'path': 'tests/files/done/',
+            'path': 'tests/files/done',
             'AWS_S3_HOST': settings.WRITE_AWS_S3_HOST,
             'AWS_S3_BUCKET_NAME': settings.WRITE_AWS_S3_BUCKET_NAME,
             'AWS_ACCESS_KEY_ID': settings.WRITE_AWS_ACCESS_KEY_ID,
             'AWS_SECRET_ACCESS_KEY': settings.WRITE_AWS_SECRET_ACCESS_KEY
         }
-        s3_test_file_list = [conf.get('path') + 'test_csv.csv',
-                             conf.get('path') + 'test_json.json',
-                             conf.get('path') + 'test_xml.xml']
+        s3_test_file_list = ['test_csv.csv',
+                             'test_json.json',
+                             'test_xml.xml']
+
         storage = S3Storage(conf)
         result = storage.list_dir()
         self.assertListEqual(sorted(result), sorted(s3_test_file_list))
@@ -60,10 +62,29 @@ class TestStorage(unittest.TestCase):
         s3_test_file_list.pop(0)
         self.assertListEqual(sorted(result), sorted(s3_test_file_list))
 
+    def test_s3_delete_all(self):
+        """Teardown for s3 bucket"""
+        conf = {
+            'path': 'tests/files/done',
+            'AWS_S3_HOST': settings.WRITE_AWS_S3_HOST,
+            'AWS_S3_BUCKET_NAME': settings.WRITE_AWS_S3_BUCKET_NAME,
+            'AWS_ACCESS_KEY_ID': settings.WRITE_AWS_ACCESS_KEY_ID,
+            'AWS_SECRET_ACCESS_KEY': settings.WRITE_AWS_SECRET_ACCESS_KEY
+        }
+
+        storage = S3Storage(conf)
+        result = storage.list_dir()
+
+        for file_name in result:
+            storage.delete_file(file_name)
+
+        result = storage.list_dir()
+        self.assertEqual(len(result), 0)
+
     def test_ftp_push(self):
         """Tests the ftp push"""
         conf = {
-            'path': '/tests/files/done/',
+            'path': '/tests/files/done/tmp',
             'FTP_HOST': 'localhost',
             'FTP_USER': 'test',
             'FTP_PASSWORD': 'test',
@@ -75,12 +96,13 @@ class TestStorage(unittest.TestCase):
             with open(os.path.join('./tests/files/', file_name), 'rb') as tmpfile:
                 data = tmpfile.read()
                 storage.write_file(file_name, data)
+        storage.move_files()
         self.teardown()
 
     def test_ftp_read(self):
         """Tests the ftp pull"""
         conf = {
-            'path': '/tests/files/done/',
+            'path': '/tests/files/done',
             'FTP_HOST': 'localhost',
             'FTP_USER': 'test',
             'FTP_PASSWORD': 'test',
@@ -111,7 +133,7 @@ class TestStorage(unittest.TestCase):
     def test_sftp_push(self):
         """Tests the sftp push"""
         conf = {
-            'path': '/upload/tests/files',
+            'path': '/upload/tests/files/tmp',
             'FTP_HOST': 'localhost',
             'FTP_USER': 'foo',
             'FTP_PASSWORD': 'pass',
@@ -123,6 +145,7 @@ class TestStorage(unittest.TestCase):
             with open(os.path.join('./tests/files/', file_name), 'rb') as tmpfile:
                 data = tmpfile.read()
                 storage.write_file(file_name, data)
+        storage.move_files()
         self.teardown()
 
     def test_sftp_getlist_read_delete(self):
@@ -144,12 +167,13 @@ class TestStorage(unittest.TestCase):
         self.teardown()
 
         result = storage.list_dir()
-        self.assertListEqual(sorted(result), sorted(TEST_FILE_LIST))
         for file_name in result:
             storage.delete_file(file_name)
 
+        self.assertListEqual(sorted(result), sorted(TEST_FILE_LIST))
         result = storage.list_dir()
         self.assertEqual(len(result), 0)
+
 
     def test_process_files(self):
         """Test moving of files"""
@@ -182,7 +206,7 @@ class TestStorage(unittest.TestCase):
     def test_folder_date_path(self):
         date_folder = utils.get_date_based_folder()
         current_date = datetime.utcnow().strftime("%Y%/%m%/%d")
-        self.assertEqual(date_folder,current_date)
+        self.assertEqual(date_folder, current_date)
 
     def test_new_day(self):
         self.assertTrue(utils.check_new_day(datetime.utcnow().date() - timedelta(days=1)))

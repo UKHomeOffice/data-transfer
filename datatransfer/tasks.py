@@ -2,7 +2,7 @@
 
 import logging
 from datatransfer import settings
-from datatransfer import storage #This is required
+from datatransfer import storage #This is required - ignore linter
 from datatransfer import utils
 
 
@@ -36,9 +36,12 @@ def storage_type(path, read_write):
     configuration.
 
     """
+    LOGGER.debug('Task - Storage type called : ' + path + ' - ' + read_write)
+    LOGGER.debug('Task - ReadStorage : ' + settings.READ_STORAGE_TYPE
+                 + ' - WriteStorage : ' + settings.WRITE_STORAGE_TYPE)
     if read_write == 'r':
         if ((settings.READ_STORAGE_TYPE.endswith('FtpStorage')) or
-                (settings.READ_STORAGE_TYPE.endswith('sFtpStorage'))):
+                (settings.READ_STORAGE_TYPE.endswith('SftpStorage'))):
             conf = {
                 'path': path,
                 'FTP_HOST': settings.READ_FTP_HOST,
@@ -46,7 +49,7 @@ def storage_type(path, read_write):
                 'FTP_PASSWORD': settings.READ_FTP_PASSWORD,
                 'FTP_PORT': settings.READ_FTP_PORT
             }
-            LOGGER.info('Setting read storage to FTP')
+            LOGGER.info('Task - Setting read storage to FTP')
             return READSTORAGETYPE(conf)
         elif settings.READ_STORAGE_TYPE.endswith('S3Storage'):
             conf = {
@@ -56,13 +59,13 @@ def storage_type(path, read_write):
                 'AWS_ACCESS_KEY_ID': settings.READ_AWS_ACCESS_KEY_ID,
                 'AWS_SECRET_ACCESS_KEY': settings.READ_AWS_SECRET_ACCESS_KEY
             }
-            LOGGER.info('Setting read storage to S3')
+            LOGGER.info('Task - Setting read storage to S3')
             return READSTORAGETYPE(conf)
         elif settings.READ_STORAGE_TYPE.endswith('FolderStorage'):
             conf = {
                 'path': path
             }
-            LOGGER.info('Setting read storage to File server')
+            LOGGER.info('Task - Setting read storage to File server')
             return READSTORAGETYPE(conf)
     elif read_write == 'w':
         if ((settings.WRITE_STORAGE_TYPE.endswith('FtpStorage')) or
@@ -74,7 +77,7 @@ def storage_type(path, read_write):
                 'FTP_PASSWORD': settings.WRITE_FTP_PASSWORD,
                 'FTP_PORT': settings.WRITE_FTP_PORT
             }
-            LOGGER.info('Setting write storage to FTP/sFTP')
+            LOGGER.info('Task - Setting write storage to FTP/sFTP')
             return WRITESTORAGETYPE(conf)
         elif settings.WRITE_STORAGE_TYPE.endswith('S3Storage'):
             conf = {
@@ -84,17 +87,18 @@ def storage_type(path, read_write):
                 'AWS_ACCESS_KEY_ID': settings.WRITE_AWS_ACCESS_KEY_ID,
                 'AWS_SECRET_ACCESS_KEY': settings.WRITE_AWS_SECRET_ACCESS_KEY
             }
-            LOGGER.info('Setting write storage to S3')
+            LOGGER.info('Task - Setting write storage to S3')
             return WRITESTORAGETYPE(conf)
         elif settings.WRITE_STORAGE_TYPE.endswith('FolderStorage'):
             conf = {
                 'path': path
             }
-            LOGGER.info('Setting write storage to File server')
+            LOGGER.info('Task - Setting write storage to File server')
             return WRITESTORAGETYPE(conf)
 
 
-def process_files(source=settings.SOURCE_PATH, dest=settings.DEST_PATH):
+def process_files(source=settings.INGEST_SOURCE_PATH,
+                  dest=settings.INGEST_DEST_PATH):
     """Processes the files found at the source storage.
 
     This task can be run to move the files from the source path to the new path.
@@ -112,24 +116,34 @@ def process_files(source=settings.SOURCE_PATH, dest=settings.DEST_PATH):
     """
 
     LOGGER.info('Main - Started processing files')
+    LOGGER.debug('Main - Read path var : ' + source)
+    LOGGER.debug('Main - Write path var : ' + dest)
     try:
-        if settings.FOLDER_DATE_OUTPUT:
-            if dest.endswith('/'):
-                dest = dest + utils.get_date_based_folder()
-            else:
-                dest = dest + '/' + utils.get_date_based_folder()
+        if dest.endswith('/'):
+            dest = dest + 'tmp'
+        else:
+            dest = dest + '/tmp'
+
+        if settings.FOLDER_DATE_OUTPUT == 'True':
+            LOGGER.debug('Task - Folder date output set to ' + settings.FOLDER_DATE_OUTPUT)
+            dest = dest + '/' + utils.get_date_based_folder()
 
         read_storage = storage_type(source, 'r')
         write_storage = storage_type(dest, 'w')
     except Exception as err:
-        LOGGER.exception('Main - Error with storage ' + err.message)
+        LOGGER.exception('Main - Error with storage ' + repr(err))
         raise
     files = read_storage.list_dir()[:settings.MAX_FILES_BATCH]
+    LOGGER.debug('Task - List directory successful')
     for file_name in files:
+        LOGGER.debug('PROCESS FILE')
         try:
             data = read_storage.read_file(file_name)
             write_storage.write_file(file_name, data)
             read_storage.delete_file(file_name)
         except Exception as err:
-            LOGGER.exception('Main - Error with file read/write :' + err.message)
+            LOGGER.exception('Task - Error with file read/write :' + repr(err))
             raise
+
+    if not settings.WRITE_STORAGE_TYPE.endswith('S3Storage'):
+        write_storage.move_files()
