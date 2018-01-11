@@ -1,3 +1,4 @@
+"""Test module"""
 import os
 from pathlib import Path
 import unittest
@@ -23,7 +24,7 @@ class TestS3Upload(unittest.TestCase):
     def test_upload_to_s3_bucket(self):
         """Uploads the test files to S3"""
         conf = {
-            'path': 'tests/files/done/',
+            'path': 'tests/files/done',
             'AWS_S3_HOST': settings.WRITE_AWS_S3_HOST,
             'AWS_S3_BUCKET_NAME': settings.WRITE_AWS_S3_BUCKET_NAME,
             'AWS_ACCESS_KEY_ID': settings.WRITE_AWS_ACCESS_KEY_ID,
