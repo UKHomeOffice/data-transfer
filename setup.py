@@ -10,7 +10,7 @@ def readme():
 
 setup(
     name="data-transfer",
-    version="1.1.0",
+    version="1.2.0",
     author="Aker Systems",
     author_email="development@akersystems.com",
     classifiers=[
