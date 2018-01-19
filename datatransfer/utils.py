@@ -36,8 +36,8 @@ def get_date_based_folder():
         A string that contains the current date YYYY/MM/DD
 
     """
-    folder_date = datetime.utcnow().date().strftime("%Y%/%m%/%d")
-    return folder_date
+    int_date = str(datetime.utcnow().date())
+    return int_date.replace('-', '/')
 
 
 def check_new_day(folder_date):

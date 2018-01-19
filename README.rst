@@ -48,6 +48,7 @@ commands from the project root folder::
     python3 -m venv ~/.virtualenvs/data-transfer
     source ~/.virtualenvs/data-transfer/bin/activate
     pip3 install -e . -r requirements.txt
+    export PYTHONPATH=.
 
 
 Using virtualenvwrapper
@@ -57,7 +58,7 @@ Alternatively, if you are using ``virtualenvwrapper`` then run the following::
 
     mkvirtualenv data-transfer -p python3
     pip3 install -e . -r requirements.txt
-
+    export PYTHONPATH=.
 
 Dependancies for local testing
 """"""""""""""""""""""""""""""
@@ -152,6 +153,10 @@ Note: the read and write storage types need to be prefixed and options are:
 * datatransfer.storage.SftpStorage
 * datatransfer.storage.S3Storage
 
+* Also ensure that the source and destination paths have the correct leading and
+trailing slashes, this will depend on the storage type and the OS. See the
+ecosystem.config file for examples.
+
 
 Source / read settings
 """"""""""""""""""""""
@@ -166,6 +171,8 @@ configure the settings associated with the source storage type.
 +----------------------------+------------------------+--------------------------+
 |READ_FTP_PASSWORD           | pass                   | Password                 |
 +----------------------------+------------------------+--------------------------+
+|READ_FTP_USER               | user                   | Username                |
++----------------------------+-------------------------+-------------------------+
 |READ_FTP_PORT               | 21                     | Port the server uses     |
 +----------------------------+------------------------+--------------------------+
 |READ_AWS_ACCESS_KEY_ID      | accessKey1             | Access key for S3        |
@@ -174,7 +181,8 @@ configure the settings associated with the source storage type.
 +----------------------------+------------------------+--------------------------+
 |READ_AWS_S3_HOST            | http://localhost:8000  | URL of S3                |
 +----------------------------+------------------------+--------------------------+
-
+|READ_AWS_S3_REGION          | eu-west-1              | region for s3 bucket     |
++----------------------------+------------------------+--------------------------+
 
 Target / write settings
 """""""""""""""""""""""
@@ -201,7 +209,8 @@ configure the settings associated with the target storage type.
 +----------------------------+-----------------------+-------------------------+
 |WRITE_AWS_S3_HOST           | http://localhost:8000 | URL of S3               |
 +----------------------------+-----------------------+-------------------------+
-
+|WRITE_AWS_S3_REGION         | eu-west-1             | region for s3 bucket    |
++----------------------------+-----------------------+-------------------------+
 
 Running the application
 -----------------------

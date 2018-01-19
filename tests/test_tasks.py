@@ -16,6 +16,7 @@ from datatransfer import utils
 
 # Create your tests here.
 TEST_FILE_LIST = ['test_csv.csv', 'test_json.json', 'test_xml.xml']
+TEST_CONTENT = b'THIS SHOULD STILL BE HERE'
 
 class TestStorage(unittest.TestCase):
     """ Test class for storage """
@@ -27,6 +28,9 @@ class TestStorage(unittest.TestCase):
 
         for file_name in TEST_FILE_LIST:
             Path(os.path.join(directory, file_name)).touch()
+            with open(os.path.join(directory, file_name),'wb') as test_file:
+                test_file.write(TEST_CONTENT)
+            test_file.close
 
     def test_file_path_listing(self):
         """Check file list works"""
@@ -48,7 +52,8 @@ class TestStorage(unittest.TestCase):
             'AWS_S3_HOST': settings.WRITE_AWS_S3_HOST,
             'AWS_S3_BUCKET_NAME': settings.WRITE_AWS_S3_BUCKET_NAME,
             'AWS_ACCESS_KEY_ID': settings.WRITE_AWS_ACCESS_KEY_ID,
-            'AWS_SECRET_ACCESS_KEY': settings.WRITE_AWS_SECRET_ACCESS_KEY
+            'AWS_SECRET_ACCESS_KEY': settings.WRITE_AWS_SECRET_ACCESS_KEY,
+            'AWS_S3_REGION': settings.WRITE_AWS_S3_REGION
         }
         s3_test_file_list = ['test_csv.csv',
                              'test_json.json',
@@ -57,6 +62,10 @@ class TestStorage(unittest.TestCase):
         storage = S3Storage(conf)
         result = storage.list_dir()
         self.assertListEqual(sorted(result), sorted(s3_test_file_list))
+        for file_name in result:
+            content = storage.read_file(file_name)
+            self.assertEqual(TEST_CONTENT, content)
+
         storage.delete_file(s3_test_file_list[0])
         result = storage.list_dir()
         s3_test_file_list.pop(0)
@@ -69,7 +78,8 @@ class TestStorage(unittest.TestCase):
             'AWS_S3_HOST': settings.WRITE_AWS_S3_HOST,
             'AWS_S3_BUCKET_NAME': settings.WRITE_AWS_S3_BUCKET_NAME,
             'AWS_ACCESS_KEY_ID': settings.WRITE_AWS_ACCESS_KEY_ID,
-            'AWS_SECRET_ACCESS_KEY': settings.WRITE_AWS_SECRET_ACCESS_KEY
+            'AWS_SECRET_ACCESS_KEY': settings.WRITE_AWS_SECRET_ACCESS_KEY,
+            'AWS_S3_REGION': settings.WRITE_AWS_S3_REGION
         }
 
         storage = S3Storage(conf)
@@ -93,13 +103,13 @@ class TestStorage(unittest.TestCase):
         self.setup()
         storage = FtpStorage(conf)
         for file_name in TEST_FILE_LIST:
-            with open(os.path.join('./tests/files/', file_name), 'rb') as tmpfile:
+            with open('./tests/files/' + file_name, 'rb') as tmpfile:
                 data = tmpfile.read()
                 storage.write_file(file_name, data)
         storage.move_files()
         self.teardown()
 
-    def test_ftp_read(self):
+    def test_ftp_read_and_delete(self):
         """Tests the ftp pull"""
         conf = {
             'path': '/tests/files/done',
@@ -111,7 +121,8 @@ class TestStorage(unittest.TestCase):
         storage = FtpStorage(conf)
         result = storage.list_dir()
         for file_name in result:
-            storage.read_file(file_name)
+            content = storage.read_file(file_name)
+            self.assertEqual(TEST_CONTENT, content)
             storage.delete_file(file_name)
 
         self.assertListEqual(sorted(result), sorted(TEST_FILE_LIST))
@@ -142,7 +153,7 @@ class TestStorage(unittest.TestCase):
         self.setup()
         storage = SftpStorage(conf)
         for file_name in TEST_FILE_LIST:
-            with open(os.path.join('./tests/files/', file_name), 'rb') as tmpfile:
+            with open('./tests/files/' + file_name, 'rb') as tmpfile:
                 data = tmpfile.read()
                 storage.write_file(file_name, data)
         storage.move_files()
@@ -161,13 +172,15 @@ class TestStorage(unittest.TestCase):
         self.setup()
         storage = SftpStorage(conf)
         for file_name in TEST_FILE_LIST:
-            with open(os.path.join('./tests/files/', file_name), 'rb') as tmpfile:
+            with open('./tests/files/' + file_name, 'rb') as tmpfile:
                 data = tmpfile.read()
                 storage.write_file(file_name, data)
         self.teardown()
 
         result = storage.list_dir()
         for file_name in result:
+            content = storage.read_file(file_name)
+            self.assertEqual(TEST_CONTENT, content)
             storage.delete_file(file_name)
 
         self.assertListEqual(sorted(result), sorted(TEST_FILE_LIST))
@@ -204,11 +217,14 @@ class TestStorage(unittest.TestCase):
 
 
     def test_folder_date_path(self):
+        """Tests folder date creation"""
         date_folder = utils.get_date_based_folder()
-        current_date = datetime.utcnow().strftime("%Y%/%m%/%d")
+        int_date = str(datetime.utcnow().date())
+        current_date = int_date.replace('-', '/')
         self.assertEqual(date_folder, current_date)
 
     def test_new_day(self):
+        """Tests new day check"""
         self.assertTrue(utils.check_new_day(datetime.utcnow().date() - timedelta(days=1)))
         self.assertFalse(utils.check_new_day(datetime.utcnow().date()))
 

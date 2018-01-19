@@ -1,6 +1,7 @@
 """Tasks module"""
 
 import logging
+import os
 from datatransfer import settings
 from datatransfer import storage #This is required - ignore linter
 from datatransfer import utils
@@ -57,7 +58,8 @@ def storage_type(path, read_write):
                 'AWS_S3_HOST': settings.READ_AWS_S3_HOST,
                 'AWS_S3_BUCKET_NAME': settings.READ_AWS_S3_BUCKET_NAME,
                 'AWS_ACCESS_KEY_ID': settings.READ_AWS_ACCESS_KEY_ID,
-                'AWS_SECRET_ACCESS_KEY': settings.READ_AWS_SECRET_ACCESS_KEY
+                'AWS_SECRET_ACCESS_KEY': settings.READ_AWS_SECRET_ACCESS_KEY,
+                'AWS_S3_REGION': settings.READ_AWS_S3_REGION,
             }
             LOGGER.info('Task - Setting read storage to S3')
             return READSTORAGETYPE(conf)
@@ -85,7 +87,8 @@ def storage_type(path, read_write):
                 'AWS_S3_HOST': settings.WRITE_AWS_S3_HOST,
                 'AWS_S3_BUCKET_NAME': settings.WRITE_AWS_S3_BUCKET_NAME,
                 'AWS_ACCESS_KEY_ID': settings.WRITE_AWS_ACCESS_KEY_ID,
-                'AWS_SECRET_ACCESS_KEY': settings.WRITE_AWS_SECRET_ACCESS_KEY
+                'AWS_SECRET_ACCESS_KEY': settings.WRITE_AWS_SECRET_ACCESS_KEY,
+                'AWS_S3_REGION': settings.WRITE_AWS_S3_REGION,
             }
             LOGGER.info('Task - Setting write storage to S3')
             return WRITESTORAGETYPE(conf)
@@ -116,17 +119,27 @@ def process_files(source=settings.INGEST_SOURCE_PATH,
     """
 
     LOGGER.info('Main - Started processing files')
+    LOGGER.debug('Main - OS identified as ' + os.name)
     LOGGER.debug('Main - Read path var : ' + source)
     LOGGER.debug('Main - Write path var : ' + dest)
     try:
-        if dest.endswith('/'):
-            dest = dest + 'tmp'
+        if os.name == 'nt' and settings.WRITE_STORAGE_TYPE.endswith('FolderStorage'):
+            LOGGER.debug('Main - OS Identified as Windows for WriteStorage')
+            sep = os.sep
         else:
-            dest = dest + '/tmp'
+            sep = '/'
 
         if settings.FOLDER_DATE_OUTPUT == 'True':
             LOGGER.debug('Task - Folder date output set to ' + settings.FOLDER_DATE_OUTPUT)
-            dest = dest + '/' + utils.get_date_based_folder()
+            if dest.endswith(sep):
+                dest = dest + utils.get_date_based_folder()
+            else:
+                dest = dest + sep + utils.get_date_based_folder()
+
+        if dest.endswith(sep):
+            dest = dest + 'tmp'
+        else:
+            dest = dest + sep + 'tmp'
 
         read_storage = storage_type(source, 'r')
         write_storage = storage_type(dest, 'w')
