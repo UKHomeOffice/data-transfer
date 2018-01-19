@@ -8,6 +8,8 @@ transfer protocols and storage types.
 The application is built for Python 3, but also tested against Python 2.7. It
 is **not** compatible with Python 2.6.
 
+**Note**: The application will not work if you have files with spaces in the names.
+
 Installing and getting started
 ------------------------------
 
@@ -242,6 +244,16 @@ you will need to change/add additional services into the ecosystem config file.
 See here for examples:
 
 <http://pm2.keymetrics.io/docs/usage/application-declaration/#process-file>
+
+
+Windows
+-------
+
+The application is portable between linux and windows, however when running the app on windows there are some specifics you may want to take into account:
+
+1. If you are running the microservice using a batch file or other mechanism other than PM2, you will need to ensure that the environment variables are set without quotes.
+
+2. The file paths for FolderStorage should be Windows paths, for FTP,sFTP and S3 these can be unix format.
 
 
 Contributing
