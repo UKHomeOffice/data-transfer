@@ -2,7 +2,6 @@
 
 import errno
 import ftplib
-from ftplib import FTP
 import logging
 import shutil
 import os
@@ -131,13 +130,13 @@ class FolderStorage:
         LOGGER.debug('Folder - Move files : ' + self.path)
         try:
             source = self.path
-            dest = source.rstrip('/tmp')
+            dest = source.rstrip((os.sep + 'tmp'))
             files = os.listdir(source)
 
             for filename in files:
                 LOGGER.debug('Folder - Trying to move file : '
                              + os.path.join(self.path, filename) + ' to ' + dest)
-                shutil.move(source + '/' + filename, dest)
+                shutil.move(os.path.join(source, filename), os.path.join(dest, filename))
 
             return True
         except OSError:
@@ -195,12 +194,12 @@ class FtpStorage:
 
     """
     def __init__(self, conf):
+        LOGGER.debug('FTP - Set storage type to FTP')
         self.path = conf.get('path')
-        self.ftp = FTP(conf.get('FTP_HOST'))
+        LOGGER.debug('FTP - Path: ' + self.path)
+        self.ftp = ftplib.FTP(conf.get('FTP_HOST'))
         self.ftp.login(conf.get('FTP_USER'), conf.get('FTP_PASSWORD'))
         self.check_dir_path(self.path.split('/'))
-        LOGGER.debug('FTP - Set storage type to FTP')
-        LOGGER.debug('FTP - Path: ' + self.path)
 
     def check_dir_exists(self, folder):
         """Checks whether a specific directory exists on the FTP server.
@@ -297,18 +296,18 @@ class FtpStorage:
             A string containing the contents of the file being read.
 
         """
-        LOGGER.debug('FTP - Read file : ' + os.path.join(self.path, file_name))
+        LOGGER.debug('FTP - Read file : ' + self.path + '/' + file_name)
         try:
             self.ftp.cwd(self.path)
-            with tempfile.NamedTemporaryFile('w+b') as temp_file:
-                self.ftp.retrbinary(
-                    'RETR ' + file_name,
-                    temp_file.write
-                )
+            with tempfile.TemporaryFile('w+b') as temp_file:
+                self.ftp.retrbinary('RETR %s' % file_name, temp_file.write)
+                temp_file.flush()
+                temp_file.seek(0)
                 return temp_file.read()
+
         except ftplib.all_errors as err:
             LOGGER.error('FTP - Error reading file from ftp server '
-                         + os.path.join(self.path, file_name)  + repr(err))
+                         + self.path + '/' + file_name  + repr(err))
             raise
         except Exception as err:
             LOGGER.exception('FTP - Unexpected error ' + repr(err))
@@ -335,8 +334,8 @@ class FtpStorage:
 
             for filename in files:
                 LOGGER.debug('FTP - Trying to move file : '
-                             + os.path.join(self.path, filename) + ' to ' + dest)
-                self.ftp.rename(source +'/' + filename, dest + '/' + filename)
+                             + self.path + '/' + filename + ' to ' + dest)
+                self.ftp.rename(source + '/' + filename, dest + '/' + filename)
 
             return True
         except OSError:
@@ -345,9 +344,6 @@ class FtpStorage:
         except Exception as err:
             LOGGER.exception('FTP - Unexpected error ' + repr(err))
             raise
-
-
-
 
     def write_file(self, file_name, content):
         """Writes content to a file to the FTP server.
@@ -366,16 +362,20 @@ class FtpStorage:
             Returns True once the file is successfully written.
 
         """
-        LOGGER.debug('FTP - Write file : ' + os.path.join(self.path, file_name))
+        LOGGER.debug('FTP - Write file : ' + self.path + '/' + file_name)
         try:
             self.ftp.cwd(self.path)
-            with tempfile.NamedTemporaryFile('w+b') as file_obj:
-                file_obj.write(content)
-                self.ftp.storbinary('STOR ' + file_name, file_obj)
+            file_obj = tempfile.TemporaryFile()
+            file_obj.write(content)
+            file_obj.flush()
+            file_obj.seek(0)
+            self.ftp.storbinary('STOR ' + file_name, file_obj)
+            file_obj.close()
             return True
+
         except ftplib.all_errors as err:
             LOGGER.error('FTP - Error writing file to ftp server '
-                         + os.path.join(self.path, file_name)  + repr(err))
+                         + self.path + '/' + file_name + ' ' + repr(err))
             raise
         except Exception as err:
             LOGGER.exception('FTP - Unexpected error ' + repr(err))
@@ -396,18 +396,21 @@ class FtpStorage:
             returns True once the file is successfully deleted.
 
         """
-        LOGGER.debug('FTP - Delete file : ' + os.path.join(self.path, file_name))
+        LOGGER.debug('FTP - Delete file : ' + self.path + '/' + file_name)
         try:
             self.ftp.cwd(self.path)
             self.ftp.delete(file_name)
             return True
         except ftplib.all_errors as err:
             LOGGER.error('FTP - Error deleting file from ftp server '
-                         + os.path.join(self.path, file_name)  + repr(err))
+                         + self.path + '/' + file_name + ' ' + repr(err))
             raise
         except Exception as err:
             LOGGER.exception('FTP - Unexpected error ' + repr(err))
             raise
+
+    def __exit__(self, type, value, traceback):
+        self.ftp.quit()
 
 class SftpStorage:
     """Abstraction for using an sFTP server for storage.
@@ -425,12 +428,12 @@ class SftpStorage:
 
     """
     def __init__(self, conf):
+        LOGGER.debug('sFTP - Set storage type to Sftp')
         self.path = conf.get('path')
+        LOGGER.debug('sFTP - Path: ' + self.path)
         sftp_client = self.get_sftp_client(conf)
         self.sftp = sftp_client
         self.check_dir_path(self.path.split('/'))
-        LOGGER.debug('sFTP - Set storage type to Sftp')
-        LOGGER.debug('sFTP - Path: ' + self.path)
 
 
     @staticmethod
@@ -553,19 +556,22 @@ class SftpStorage:
             A string containing the contents of the file being read.
 
         """
-        LOGGER.debug('sFTP - Read File : ' + os.path.join(self.path, file_name))
+        LOGGER.debug('sFTP - Read File : ' + self.path + '/' + file_name)
         try:
             self.sftp.chdir(self.path)
-            with tempfile.NamedTemporaryFile('w+b') as temp_file:
+            with tempfile.TemporaryFile('w+b') as temp_file:
                 self.sftp.getfo(file_name, temp_file)
+                temp_file.flush()
+                temp_file.seek(0)
                 return temp_file.read()
+
         except IOError as err:
             if err.errno == errno.ENOENT:
                 LOGGER.warning('sFTP - File not found when reading sFTP '
-                               + os.path.join(self.path, file_name))
+                               + self.path + '/' + file_name)
             else:
                 LOGGER.error('sFTP - Error reading file from sftp server '
-                             + os.path.join(self.path, file_name) + repr(err))
+                             + self.path + '/' + file_name + ' ' + repr(err))
                 raise
         except Exception as err:
             LOGGER.exception('sFTP - Unexpected error ' + repr(err))
@@ -587,13 +593,16 @@ class SftpStorage:
         LOGGER.debug('sFTP - Move files : ' + self.path)
         try:
             source = self.path
-            dest = '/' + source.strip('/tmp')
+            dest = source.rstrip('/tmp')
             files = self.list_dir()
             LOGGER.debug('sFTP - Destination folder : ' + dest)
             for filename in files:
                 LOGGER.debug('sFTP - Trying to move file '
                              + filename + ' to ' + dest)
-                self.sftp.posix_rename(source + '/' + filename, dest + '/' + filename)
+                LOGGER.debug('sFTP - Source filename ' + source + '/' + filename
+                             + ' Target filename ' + dest + '/' + filename)
+                self.sftp.posix_rename(source + '/' + filename, dest + '/'
+                                       + filename)
 
             return True
         except OSError as err:
@@ -621,20 +630,20 @@ class SftpStorage:
             Returns True once the file is successfully written.
 
         """
-        LOGGER.debug('sFTP - Write File : ' + os.path.join(self.path, file_name))
+        LOGGER.debug('sFTP - Write File : ' + self.path + '/' + file_name)
         try:
             self.sftp.chdir(self.path)
-            with self.sftp.open(file_name, 'w+b') as file_obj:
+            with self.sftp.open(self.path + '/' + file_name, 'w+') as file_obj:
                 file_obj.write(content)
             return True
         except IOError as err:
             if err.errno == errno.ENOENT:
                 LOGGER.error('sFTP - (File not found) Check the path is not relative '
-                             + os.path.join(self.path, file_name))
+                             + self.path + '/' + file_name)
                 raise
             else:
                 LOGGER.error('sFTP - Error writing file to sftp server '
-                             + os.path.join(self.path, file_name)  + repr(err))
+                             + self.path + '/' + file_name + ' ' + repr(err))
                 raise
         except Exception as err:
             LOGGER.exception('sFTP - Unexpected error ' + repr(err))
@@ -655,14 +664,14 @@ class SftpStorage:
             returns True once the file is successfully deleted.
 
         """
-        LOGGER.debug('sFTP - Delete File : ' + os.path.join(self.path, file_name))
+        LOGGER.debug('sFTP - Delete File : ' + self.path + '/' + file_name)
         try:
             self.sftp.chdir(self.path)
             self.sftp.remove(file_name)
             return True
         except IOError as err:
             LOGGER.error('sFTP - Error deleting file from ftp server '
-                         + os.path.join(self.path, file_name)  + repr(err))
+                         + self.path + '/' + file_name + ' ' + repr(err))
             raise
         except Exception as err:
             LOGGER.exception('sFTP - Unexpected error ' + repr(err))
@@ -689,6 +698,7 @@ def get_s3_resource(conf):
     """
     resource = boto3.resource(
         's3',
+        region_name=conf.get('AWS_S3_REGION'),
         endpoint_url=conf.get('AWS_S3_HOST'),
         aws_access_key_id=conf.get('AWS_ACCESS_KEY_ID'),
         aws_secret_access_key=conf.get('AWS_SECRET_ACCESS_KEY')
@@ -736,9 +746,9 @@ class S3Storage:
 
     """
     def __init__(self, conf):
+        LOGGER.debug('S3 - Set storage type to S3 Bucket')
         self.path = conf.get('path').rstrip('/tmp')
         self.bucket = get_bucket(conf.get('AWS_S3_BUCKET_NAME'), conf)
-        LOGGER.debug('S3 - Set storage type to S3 Bucket')
         LOGGER.debug('S3 - Path: ' + self.path)
 
     def list_dir(self):
@@ -777,9 +787,13 @@ class S3Storage:
         """
         LOGGER.debug('S3 - Read File : ' + self.path + '/' + file_name)
         try:
-            with tempfile.NamedTemporaryFile('wb+') as temp_file:
-                self.bucket.download_file(self.path + '/' + file_name, temp_file.name)
+            with tempfile.TemporaryFile() as temp_file:
+                self.bucket.download_fileobj(self.path + '/' + file_name, temp_file)
+                temp_file.flush()
+                temp_file.seek(0)
                 return temp_file.read()
+
+
         except botocore.exceptions.ClientError as err:
             LOGGER.error('S3 - Error reading S3 file ' + file_name
                          + ' - ' + repr(err))
@@ -805,12 +819,15 @@ class S3Storage:
             Returns True once the file is successfully written.
 
         """
-        LOGGER.debug('S3 - Write File : ' + os.path.join(self.path, file_name))
+        LOGGER.debug('S3 - Write File : ' + self.path + '/' + file_name)
         try:
             with tempfile.NamedTemporaryFile('w+b') as file_obj:
                 file_obj.write(content)
+                file_obj.flush()
+                file_obj.seek(0)
                 self.bucket.upload_fileobj(file_obj, self.path + '/' + file_name)
-            return True
+                return True
+                
         except botocore.exceptions.ClientError as err:
             LOGGER.error('S3 - Error writing to S3 directory : ' + file_name
                          + ' - ' + repr(err))
@@ -834,7 +851,7 @@ class S3Storage:
             returns True once the file is successfully deleted.
 
         """
-        LOGGER.debug('S3 - Delete File : ' + os.path.join(self.path, file_name))
+        LOGGER.debug('S3 - Delete File : ' + self.path + '/' + file_name)
         try:
             self.bucket.delete_objects(
                 Delete={
