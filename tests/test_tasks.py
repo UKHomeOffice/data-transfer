@@ -228,6 +228,18 @@ class TestStorage(unittest.TestCase):
         self.assertTrue(utils.check_new_day(datetime.utcnow().date() - timedelta(days=1)))
         self.assertFalse(utils.check_new_day(datetime.utcnow().date()))
 
+    def test_string_chop(self):
+        """Test the string chop method"""
+        val = 'test/test/tmp'
+        rem = '/test'
+        rem2 = '/tmp'
+        rem3 = 'tmp'
+        result2 = 'test/test'
+        result1 = 'test/test/'
+        self.assertEqual(utils.chop_end_of_string(val, rem), val)
+        self.assertEqual(utils.chop_end_of_string(val, rem2), result2)
+        self.assertEqual(utils.chop_end_of_string(val, rem3), result1)
+
 
     def teardown(self):
         """"Teardown: also tests the folder storage delete function"""

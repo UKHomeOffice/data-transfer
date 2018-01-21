@@ -4,7 +4,7 @@ enviornment variables"""
 import os
 import logging
 import logging.config
-
+from datatransfer import utils
 
 #  Source paths and locations for storage.
 INGEST_SOURCE_PATH = os.environ.get('INGEST_SOURCE_PATH', 'tests/files')
@@ -50,9 +50,10 @@ DICTLOGCONFIG = {
     'version': 1,
     'handlers': {
         'fileHandler': {
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'myFormatter',
-            'filename': LOG_FILE_NAME
+            'filename': LOG_FILE_NAME,
+            'maxBytes': 10485760,
         }
     },
     'root':  {

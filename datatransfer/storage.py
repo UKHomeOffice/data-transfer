@@ -10,6 +10,7 @@ import tempfile
 import boto3
 import botocore
 import paramiko
+from datatransfer import utils
 
 LOGGER = logging.getLogger(__name__)
 
@@ -130,7 +131,7 @@ class FolderStorage:
         LOGGER.debug('Folder - Move files : ' + self.path)
         try:
             source = self.path
-            dest = source.rstrip((os.sep + 'tmp'))
+            dest = utils.chop_end_of_string(source, (os.sep + 'tmp'))
             files = os.listdir(source)
 
             for filename in files:
@@ -329,7 +330,7 @@ class FtpStorage:
         LOGGER.debug('FTP - Move files : ' + self.path)
         try:
             source = self.path
-            dest = source.rstrip('/tmp')
+            dest = utils.chop_end_of_string(source, '/tmp')
             files = self.list_dir()
 
             for filename in files:
@@ -593,7 +594,7 @@ class SftpStorage:
         LOGGER.debug('sFTP - Move files : ' + self.path)
         try:
             source = self.path
-            dest = source.rstrip('/tmp')
+            dest = utils.chop_end_of_string(source, '/tmp')
             files = self.list_dir()
             LOGGER.debug('sFTP - Destination folder : ' + dest)
             for filename in files:
@@ -747,7 +748,7 @@ class S3Storage:
     """
     def __init__(self, conf):
         LOGGER.debug('S3 - Set storage type to S3 Bucket')
-        self.path = conf.get('path').rstrip('/tmp')
+        self.path = utils.chop_end_of_string(conf.get('path'),'/tmp')
         self.bucket = get_bucket(conf.get('AWS_S3_BUCKET_NAME'), conf)
         LOGGER.debug('S3 - Path: ' + self.path)
 
@@ -827,7 +828,7 @@ class S3Storage:
                 file_obj.seek(0)
                 self.bucket.upload_fileobj(file_obj, self.path + '/' + file_name)
                 return True
-                
+
         except botocore.exceptions.ClientError as err:
             LOGGER.error('S3 - Error writing to S3 directory : ' + file_name
                          + ' - ' + repr(err))

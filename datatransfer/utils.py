@@ -44,3 +44,24 @@ def check_new_day(folder_date):
     """Function that checks what the current date is and determines if a new
     folder is required to be made"""
     return datetime.utcnow().date() != folder_date
+
+def chop_end_of_string(str_input, str_remove):
+    """Function that strips the supplied str_remove from the end of the input
+    string
+
+    Parameters
+    ----------
+    str_input: `str`
+                A string to be chopped
+    str_remove: `str`
+                The string to be removed from the end of the input
+
+    Returns
+    -------
+    str: `str`
+        A string that contains the new string
+
+    """
+    if str_input.endswith(str_remove):
+        return str_input[:-len(str_remove)]
+    return str_input
