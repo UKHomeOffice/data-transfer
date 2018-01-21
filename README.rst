@@ -8,7 +8,8 @@ transfer protocols and storage types.
 The application is built for Python 3, but also tested against Python 2.7. It
 is **not** compatible with Python 2.6.
 
-**Note**: The application will not work if you have files with spaces in the names.
+**Note** 
+The application will not work if you have files with spaces in the names and will fail.
 
 Installing and getting started
 ------------------------------
@@ -249,11 +250,22 @@ See here for examples:
 Windows
 -------
 
-The application is portable between linux and windows, however when running the app on windows there are some specifics you may want to take into account:
+The application is portable between linux and windows, however when running the
+app on windows there are some specifics you may want to take into account:
 
-1. If you are running the microservice using a batch file or other mechanism other than PM2, you will need to ensure that the environment variables are set without quotes.
+1. If you are running the microservice using a batch file or other mechanism
+other than PM2, you will need to ensure that the environment variables are
+set without quotes.
 
-2. The file paths for FolderStorage should be Windows paths, for FTP,sFTP and S3 these can be unix format.
+2. The file paths for FolderStorage should be Windows paths, for FTP,sFTP and
+S3 these can be unix format.
+
+For FTP, sFTP, and Folder storage ensure paths are absolute without a trailing slash
+  /path/to/something
+
+For S3 the path is used with the URL so can be relative, but without a trailing slash
+  path/to/something
+
 
 
 Contributing
