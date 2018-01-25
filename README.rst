@@ -8,8 +8,10 @@ transfer protocols and storage types.
 The application is built for Python 3, but also tested against Python 2.7. It
 is **not** compatible with Python 2.6.
 
-**Note** 
+**Note**
 The application will not work if you have files with spaces in the names and will fail.
+
+**Standard FTP is no longer supported in this app**
 
 Installing and getting started
 ------------------------------
@@ -144,6 +146,8 @@ the default value is used:
 +---------------------+----------------------+-----------+-----------------------------------+
 |LOG_FILE_NAME        | data-transfer.log    | Yes       | Filename for log output           |
 +---------------------+----------------------+-----------+-----------------------------------+
+|USE_IAM_CREDS        | False                | Yes       | Indicates to app to use IAM       |
++---------------------+----------------------+-----------+-----------------------------------+
 |READ_STORAGE_TYPE    | See footnote         | Yes       | The type of read storage          |
 +---------------------+----------------------+-----------+-----------------------------------+
 |WRITE_STORAGE_TYPE   | See footnote         | Yes       | The type of write storage         |
@@ -152,7 +156,6 @@ the default value is used:
 Note: the read and write storage types need to be prefixed and options are:
 
 * datatransfer.storage.FolderStorage
-* datatransfer.storage.FtpStorage
 * datatransfer.storage.SftpStorage
 * datatransfer.storage.S3Storage
 
@@ -164,7 +167,7 @@ ecosystem.config file for examples.
 Source / read settings
 """"""""""""""""""""""
 
-Provide the connection settings for either FTP, sFTP or S3. You only need to
+Provide the connection settings for either sFTP or S3. You only need to
 configure the settings associated with the source storage type.
 
 +----------------------------+------------------------+--------------------------+
@@ -176,7 +179,7 @@ configure the settings associated with the source storage type.
 +----------------------------+------------------------+--------------------------+
 |READ_FTP_USER               | user                   | Username                 |
 +----------------------------+------------------------+--------------------------+
-|READ_FTP_PORT               | 21                     | Port the server uses     |
+|READ_FTP_PORT               | 22                     | Port the server uses     |
 +----------------------------+------------------------+--------------------------+
 |READ_AWS_ACCESS_KEY_ID      | accessKey1             | Access key for S3        |
 +----------------------------+------------------------+--------------------------+
@@ -190,7 +193,7 @@ configure the settings associated with the source storage type.
 Target / write settings
 """""""""""""""""""""""
 
-Provide the connection settings for either FTP, sFTP or S3. You only need to
+Provide the connection settings for either sFTP or S3. You only need to
 configure the settings associated with the target storage type.
 
 +----------------------------+-----------------------+-------------------------+
@@ -202,7 +205,7 @@ configure the settings associated with the target storage type.
 +----------------------------+-----------------------+-------------------------+
 |WRITE_FTP_PASSWORD          | pass                  | Password                |
 +----------------------------+-----------------------+-------------------------+
-|WRITE_FTP_PORT              | 21                    | Port for server         |
+|WRITE_FTP_PORT              | 22                    | Port for server         |
 +----------------------------+-----------------------+-------------------------+
 |WRITE_AWS_ACCESS_KEY_ID     | accesskey1            | Access key for S3       |
 +----------------------------+-----------------------+-------------------------+
@@ -260,12 +263,19 @@ set without quotes.
 2. The file paths for FolderStorage should be Windows paths, for FTP,sFTP and
 S3 these can be unix format.
 
-For FTP, sFTP, and Folder storage ensure paths are absolute without a trailing slash
+For sFTP, and Folder storage ensure paths are absolute without a trailing slash
   /path/to/something
 
 For S3 the path is used with the URL so can be relative, but without a trailing slash
   path/to/something
 
+
+AWS
+---
+
+If you are running the app on a AWS instance that has anIAM policy you can set
+the USE_IAM_CREDS var to True and the application will use IAM policies. You must
+however ensure that the bucket name is set correctly.
 
 
 Contributing

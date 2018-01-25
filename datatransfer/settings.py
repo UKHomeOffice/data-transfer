@@ -30,20 +30,21 @@ READ_AWS_ACCESS_KEY_ID = os.environ.get('READ_AWS_ACCESS_KEY_ID', 'accessKey1')
 READ_AWS_SECRET_ACCESS_KEY = os.environ.get('READ_AWS_SECRET_ACCESS_KEY', 'verySecretKey1')
 READ_AWS_S3_BUCKET_NAME = os.environ.get('READ_AWS_S3_BUCKET_NAME', 'aws-ingest')
 READ_AWS_S3_HOST = os.environ.get('READ_AWS_S3_HOST', 'http://localhost:8000')
-READ_AWS_S3_REGION = os.environ.get('READ_AWS_S3_REGION', 'us-east-1')
+READ_AWS_S3_REGION = os.environ.get('READ_AWS_S3_REGION', 'eu-west-2')
 
 WRITE_AWS_ACCESS_KEY_ID = os.environ.get('WRITE_AWS_ACCESS_KEY_ID', 'accessKey1')
 WRITE_AWS_SECRET_ACCESS_KEY = os.environ.get('WRITE_AWS_SECRET_ACCESS_KEY', 'verySecretKey1')
 WRITE_AWS_S3_BUCKET_NAME = os.environ.get('WRITE_AWS_S3_BUCKET_NAME', 'aws-ingest')
 WRITE_AWS_S3_HOST = os.environ.get('WRITE_AWS_S3_HOST', 'http://localhost:8000')
-WRITE_AWS_S3_REGION = os.environ.get('WRITE_AWS_S3_REGION', 'us-east-1')
+WRITE_AWS_S3_REGION = os.environ.get('WRITE_AWS_S3_REGION', 'eu-west-2')
 
 #Max number of files to process at a time.
 MAX_FILES_BATCH = int(os.environ.get('MAX_FILES_BATCH', 25))
 PROCESS_INTERVAL = int(os.environ.get('PROCESS_INTERVAL', 5))
-FOLDER_DATE_OUTPUT = os.environ.get('FOLDER_DATE_OUTPUT', False)
+FOLDER_DATE_OUTPUT = os.environ.get('FOLDER_DATE_OUTPUT', 'False')
 LOG_LEVEL = os.environ.get('LOG_LEVEL', 'DEBUG')
 LOG_FILE_NAME = os.environ.get('LOG_FILE_NAME', 'data-transfer-app.log')
+USE_IAM_CREDS = os.environ.get('USE_IAM_CREDS', 'False')
 
 #  Loggin config
 DICTLOGCONFIG = {
