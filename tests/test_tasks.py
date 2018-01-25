@@ -48,12 +48,13 @@ class TestStorage(unittest.TestCase):
     def test_read_delete_from_s3_bucket(self):
         """Tests the read and delete from the S3 bucket"""
         conf = {
-            'path': 'tests/files/done',
+            'path': 'tests',
             'AWS_S3_HOST': settings.WRITE_AWS_S3_HOST,
             'AWS_S3_BUCKET_NAME': settings.WRITE_AWS_S3_BUCKET_NAME,
             'AWS_ACCESS_KEY_ID': settings.WRITE_AWS_ACCESS_KEY_ID,
             'AWS_SECRET_ACCESS_KEY': settings.WRITE_AWS_SECRET_ACCESS_KEY,
-            'AWS_S3_REGION': settings.WRITE_AWS_S3_REGION
+            'AWS_S3_REGION': settings.WRITE_AWS_S3_REGION,
+            'USE_IAM_CREDS': settings.USE_IAM_CREDS,
         }
         s3_test_file_list = ['test_csv.csv',
                              'test_json.json',
@@ -74,12 +75,13 @@ class TestStorage(unittest.TestCase):
     def test_s3_delete_all(self):
         """Teardown for s3 bucket"""
         conf = {
-            'path': 'tests/files/done',
+            'path': 'tests',
             'AWS_S3_HOST': settings.WRITE_AWS_S3_HOST,
             'AWS_S3_BUCKET_NAME': settings.WRITE_AWS_S3_BUCKET_NAME,
             'AWS_ACCESS_KEY_ID': settings.WRITE_AWS_ACCESS_KEY_ID,
             'AWS_SECRET_ACCESS_KEY': settings.WRITE_AWS_SECRET_ACCESS_KEY,
-            'AWS_S3_REGION': settings.WRITE_AWS_S3_REGION
+            'AWS_S3_REGION': settings.WRITE_AWS_S3_REGION,
+            'USE_IAM_CREDS': settings.USE_IAM_CREDS,
         }
 
         storage = S3Storage(conf)

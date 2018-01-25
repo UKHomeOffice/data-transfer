@@ -60,6 +60,7 @@ def storage_type(path, read_write):
                 'AWS_ACCESS_KEY_ID': settings.READ_AWS_ACCESS_KEY_ID,
                 'AWS_SECRET_ACCESS_KEY': settings.READ_AWS_SECRET_ACCESS_KEY,
                 'AWS_S3_REGION': settings.READ_AWS_S3_REGION,
+                'USE_IAM_CREDS': settings.USE_IAM_CREDS,
             }
             LOGGER.info('Task - Setting read storage to S3')
             return READSTORAGETYPE(conf)
@@ -89,6 +90,7 @@ def storage_type(path, read_write):
                 'AWS_ACCESS_KEY_ID': settings.WRITE_AWS_ACCESS_KEY_ID,
                 'AWS_SECRET_ACCESS_KEY': settings.WRITE_AWS_SECRET_ACCESS_KEY,
                 'AWS_S3_REGION': settings.WRITE_AWS_S3_REGION,
+                'USE_IAM_CREDS': settings.USE_IAM_CREDS,
             }
             LOGGER.info('Task - Setting write storage to S3')
             return WRITESTORAGETYPE(conf)
@@ -146,17 +148,23 @@ def process_files(source=settings.INGEST_SOURCE_PATH,
     except Exception as err:
         LOGGER.exception('Main - Error with storage ' + repr(err))
         raise
+
     files = read_storage.list_dir()[:settings.MAX_FILES_BATCH]
     LOGGER.debug('Task - List directory successful')
     for file_name in files:
-        LOGGER.debug('PROCESS FILE')
+        LOGGER.debug('PROCESS FILE ' + repr(file_name))
+        if file_name == '':
+            continue
         try:
-            data = read_storage.read_file(file_name)
-            write_storage.write_file(file_name, data)
+            contents = read_storage.read_file(file_name)
+            write_storage.write_file(file_name, contents)
             read_storage.delete_file(file_name)
+            if not settings.WRITE_STORAGE_TYPE.endswith('S3Storage'):
+                write_storage.move_files()
+
         except Exception as err:
             LOGGER.exception('Task - Error with file read/write :' + repr(err))
             raise
 
-    if not settings.WRITE_STORAGE_TYPE.endswith('S3Storage'):
-        write_storage.move_files()
+    read_storage.exit()
+    write_storage.exit()

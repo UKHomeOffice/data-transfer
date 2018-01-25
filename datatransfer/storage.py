@@ -179,6 +179,9 @@ class FolderStorage:
             LOGGER.exception('Folder - Unexpected error ' + repr(err))
             raise
 
+    def exit(self):
+        LOGGER.debug('Folder - Exit function')
+
 class FtpStorage:
     """Abstraction for using an FTP server for storage.
 
@@ -201,6 +204,7 @@ class FtpStorage:
         self.ftp = ftplib.FTP(conf.get('FTP_HOST'))
         self.ftp.login(conf.get('FTP_USER'), conf.get('FTP_PASSWORD'))
         self.check_dir_path(self.path.split('/'))
+
 
     def check_dir_exists(self, folder):
         """Checks whether a specific directory exists on the FTP server.
@@ -410,9 +414,6 @@ class FtpStorage:
             LOGGER.exception('FTP - Unexpected error ' + repr(err))
             raise
 
-    def __exit__(self, type, value, traceback):
-        self.ftp.quit()
-
 class SftpStorage:
     """Abstraction for using an sFTP server for storage.
 
@@ -435,7 +436,6 @@ class SftpStorage:
         sftp_client = self.get_sftp_client(conf)
         self.sftp = sftp_client
         self.check_dir_path(self.path.split('/'))
-
 
     @staticmethod
     def get_sftp_client(conf):
@@ -678,6 +678,10 @@ class SftpStorage:
             LOGGER.exception('sFTP - Unexpected error ' + repr(err))
             raise
 
+    def exit(self):
+        LOGGER.info('sFTP - Exit function')
+        self.sftp.close()
+
 def get_s3_resource(conf):
     """Gets an S3 resource service client; used to access S3 buckets.
 
@@ -697,13 +701,22 @@ def get_s3_resource(conf):
         session.
 
     """
-    resource = boto3.resource(
-        's3',
-        region_name=conf.get('AWS_S3_REGION'),
-        endpoint_url=conf.get('AWS_S3_HOST'),
-        aws_access_key_id=conf.get('AWS_ACCESS_KEY_ID'),
-        aws_secret_access_key=conf.get('AWS_SECRET_ACCESS_KEY')
-    )
+    region_name = conf.get('AWS_S3_REGION')
+    endpoint_url = conf.get('AWS_S3_HOST')
+    aws_access_key_id = conf.get('AWS_ACCESS_KEY_ID')
+    aws_secret_access_key = conf.get('AWS_SECRET_ACCESS_KEY')
+    use_iam_creds = conf.get('USE_IAM_CREDS')
+
+    if use_iam_creds == 'True':
+        LOGGER.info('S3 - AWS Credentials not supplied - will revert to IAM if available')
+        resource = boto3.resource('s3')
+    else:
+        resource = boto3.resource('s3', region_name=region_name,
+                                  endpoint_url=endpoint_url,
+                                  aws_access_key_id=aws_access_key_id,
+                                  aws_secret_access_key=aws_secret_access_key,
+                                 )
+
     return resource
 
 def get_bucket(bucket_name, conf):
@@ -729,8 +742,6 @@ def get_bucket(bucket_name, conf):
 
     """
     s3resource = get_s3_resource(conf)
-    if bucket_name not in [bucket.name for bucket in s3resource.buckets.all()]:
-        return s3resource.create_bucket(Bucket=bucket_name)
     return s3resource.Bucket(bucket_name)
 
 class S3Storage:
@@ -748,7 +759,7 @@ class S3Storage:
     """
     def __init__(self, conf):
         LOGGER.debug('S3 - Set storage type to S3 Bucket')
-        self.path = utils.chop_end_of_string(conf.get('path'),'/tmp')
+        self.path = utils.chop_end_of_string(conf.get('path'), '/tmp')
         self.bucket = get_bucket(conf.get('AWS_S3_BUCKET_NAME'), conf)
         LOGGER.debug('S3 - Path: ' + self.path)
 
@@ -763,7 +774,13 @@ class S3Storage:
         """
         LOGGER.debug('S3 - List bucket contents: ' + self.path)
         try:
-            return [os.path.basename(o.key) for o in self.bucket.objects.filter(Prefix=self.path)]
+            file_list = []
+            for o in self.bucket.objects.filter(Prefix=self.path):
+                file_name = o.key[len(self.path +'/'):]
+                if '/' not in file_name and file_name:
+                    file_list.append(os.path.basename(o.key))
+
+            return file_list
         except botocore.exceptions.ClientError as err:
             LOGGER.error('S3 - Error listing S3 directory ' + repr(err))
             raise
@@ -870,3 +887,6 @@ class S3Storage:
         except Exception as err:
             LOGGER.exception('S3 - Unexpected error ' + repr(err))
             raise
+
+    def exit(self):
+        LOGGER.debug('S3 - Exit function')
