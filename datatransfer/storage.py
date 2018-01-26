@@ -433,12 +433,12 @@ class SftpStorage:
         LOGGER.debug('sFTP - Set storage type to Sftp')
         self.path = conf.get('path')
         LOGGER.debug('sFTP - Path: ' + self.path)
-        sftp_client = self.get_sftp_client(conf)
-        self.sftp = sftp_client
+        self.sftp_session = self.get_sftp_transport(conf)
+        self.sftp = paramiko.SFTPClient.from_transport(self.sftp_session)
         self.check_dir_path(self.path.split('/'))
 
     @staticmethod
-    def get_sftp_client(conf):
+    def get_sftp_transport(conf):
         """Takes the configuration for the sFTP and returns a client connection.
 
         Creates the connection to the server. It will also look for the local
@@ -460,7 +460,7 @@ class SftpStorage:
                                         int(conf.get('FTP_PORT'))))
         transport.connect(username=conf.get('FTP_USER'),
                           password=conf.get('FTP_PASSWORD'))
-        return paramiko.SFTPClient.from_transport(transport)
+        return transport
 
     def check_dir_exists(self, folder):
         """Checks whether a specific directory exists on the sFTP server.
@@ -681,6 +681,7 @@ class SftpStorage:
     def exit(self):
         LOGGER.info('sFTP - Exit function')
         self.sftp.close()
+        self.sftp_session.close()
 
 def get_s3_resource(conf):
     """Gets an S3 resource service client; used to access S3 buckets.
