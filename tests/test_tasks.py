@@ -97,7 +97,7 @@ class TestStorage(unittest.TestCase):
         """Tests the ftp push"""
         conf = {
             'path': '/tests/files/done/tmp',
-            'FTP_HOST': 'localhost',
+            'FTP_HOST': 'ftp_server',
             'FTP_USER': 'test',
             'FTP_PASSWORD': 'test',
             'FTP_PORT': '21'
@@ -115,7 +115,7 @@ class TestStorage(unittest.TestCase):
         """Tests the ftp pull"""
         conf = {
             'path': '/tests/files/done',
-            'FTP_HOST': 'localhost',
+            'FTP_HOST': 'ftp_server',
             'FTP_USER': 'test',
             'FTP_PASSWORD': 'test',
             'FTP_PORT': '21'
@@ -135,7 +135,7 @@ class TestStorage(unittest.TestCase):
         """Tests the sftp push"""
         conf = {
             'path': '/upload/tests/files/done/',
-            'FTP_HOST': 'localhost',
+            'FTP_HOST': 'sftp_server',
             'FTP_USER': 'foo',
             'FTP_PASSWORD': 'pass',
             'FTP_PORT': '2222'
@@ -147,7 +147,7 @@ class TestStorage(unittest.TestCase):
         """Tests the sftp push"""
         conf = {
             'path': '/upload/tests/files/tmp',
-            'FTP_HOST': 'localhost',
+            'FTP_HOST': 'sftp_server',
             'FTP_USER': 'foo',
             'FTP_PASSWORD': 'pass',
             'FTP_PORT': '2222'
@@ -165,7 +165,7 @@ class TestStorage(unittest.TestCase):
         """test the sftp list dir"""
         conf = {
             'path': '/upload/tests/files',
-            'FTP_HOST': 'localhost',
+            'FTP_HOST': 'sftp_server',
             'FTP_USER': 'foo',
             'FTP_PASSWORD': 'pass',
             'FTP_PORT': '2222'
