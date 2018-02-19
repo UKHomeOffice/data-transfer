@@ -41,8 +41,7 @@ def storage_type(path, read_write):
     LOGGER.debug('Task - ReadStorage : ' + settings.READ_STORAGE_TYPE
                  + ' - WriteStorage : ' + settings.WRITE_STORAGE_TYPE)
     if read_write == 'r':
-        if ((settings.READ_STORAGE_TYPE.endswith('FtpStorage')) or
-                (settings.READ_STORAGE_TYPE.endswith('SftpStorage'))):
+        if (settings.READ_STORAGE_TYPE.endswith('SftpStorage')):
             conf = {
                 'path': path,
                 'FTP_HOST': settings.READ_FTP_HOST,
@@ -50,7 +49,7 @@ def storage_type(path, read_write):
                 'FTP_PASSWORD': settings.READ_FTP_PASSWORD,
                 'FTP_PORT': settings.READ_FTP_PORT
             }
-            LOGGER.info('Task - Setting read storage to FTP')
+            LOGGER.info('Task - Setting read storage to SFTP')
             return READSTORAGETYPE(conf)
         elif settings.READ_STORAGE_TYPE.endswith('S3Storage'):
             conf = {
@@ -71,8 +70,7 @@ def storage_type(path, read_write):
             LOGGER.info('Task - Setting read storage to File server')
             return READSTORAGETYPE(conf)
     elif read_write == 'w':
-        if ((settings.WRITE_STORAGE_TYPE.endswith('FtpStorage')) or
-                (settings.WRITE_STORAGE_TYPE.endswith('SftpStorage'))):
+        if (settings.WRITE_STORAGE_TYPE.endswith('SftpStorage')):
             conf = {
                 'path': path,
                 'FTP_HOST': settings.WRITE_FTP_HOST,
@@ -80,7 +78,7 @@ def storage_type(path, read_write):
                 'FTP_PASSWORD': settings.WRITE_FTP_PASSWORD,
                 'FTP_PORT': settings.WRITE_FTP_PORT
             }
-            LOGGER.info('Task - Setting write storage to FTP/sFTP')
+            LOGGER.info('Task - Setting write storage to sFTP')
             return WRITESTORAGETYPE(conf)
         elif settings.WRITE_STORAGE_TYPE.endswith('S3Storage'):
             conf = {

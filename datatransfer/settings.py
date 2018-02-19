@@ -15,8 +15,8 @@ READ_STORAGE_TYPE = os.environ.get('READ_STORAGE_TYPE', 'datatransfer.storage.Fo
 WRITE_STORAGE_TYPE = os.environ.get('WRITE_STORAGE_TYPE', 'datatransfer.storage.FolderStorage')
 
 # Env's for FTP server config. Allows for two configs for read and write.
-READ_FTP_HOST = os.environ.get('READ_FTP_HOST', 'ftp_server')
-READ_FTP_USER = os.environ.get('READ_FTP_USER', 'test')
+READ_FTP_HOST = os.environ.get('READ_FTP_HOST', 'sftp_server')
+READ_FTP_USER = os.environ.get('READ_FTP_USER', 'foo')
 READ_FTP_PASSWORD = os.environ.get('READ_FTP_PASSWORD', 'pass')
 READ_FTP_PORT = os.environ.get('READ_FTP_PORT', '22')
 
