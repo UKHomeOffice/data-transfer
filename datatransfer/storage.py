@@ -763,6 +763,7 @@ class S3Storage:
         self.path = utils.chop_end_of_string(conf.get('path'), '/tmp')
         self.bucket = get_bucket(conf.get('AWS_S3_BUCKET_NAME'), conf)
         LOGGER.debug('S3 - Path: ' + self.path)
+        conf.update(ServerSideEncryption="aws:kms")
 
     def list_dir(self):
         """Lists the contents of the S3 bucket.
