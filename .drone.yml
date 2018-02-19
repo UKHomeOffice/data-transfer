@@ -3,7 +3,7 @@ pipeline:
   wait:
     image: martin/wait:latest
     commands:
-      - /wait -c sftp_server:2222,ftp_server:21,s3server:8000
+      - /wait -c sftp_server:2222,s3server:8000
 
   make_bucket:
     image: brentley/awscli
@@ -20,9 +20,7 @@ pipeline:
       - . .virtualenvs/data-transfer/bin/activate
       - pip3 install -e . -r requirements.txt
       - export PYTHONPATH=.
-#      - sleep 100000
       - pytest tests
-
 
 services:
   s3server:
@@ -30,9 +28,6 @@ services:
       - ENDPOINT=s3server
       - BUCKET=aws-ingest
     image: scality/s3server:latest
-
-  ftp_server:
-    image: onekilo79/ftpd_test:latest
 
   sftp_server:
     image: atmoz/sftp:alpine
