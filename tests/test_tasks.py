@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 
 from datatransfer import settings
 from datatransfer.storage import FolderStorage
-from datatransfer.storage import FtpStorage
 from datatransfer.storage import S3Storage
 from datatransfer.storage import SftpStorage
 from datatransfer.tasks import process_files
@@ -90,44 +89,6 @@ class TestStorage(unittest.TestCase):
         for file_name in result:
             storage.delete_file(file_name)
 
-        result = storage.list_dir()
-        self.assertEqual(len(result), 0)
-
-    def test_ftp_push(self):
-        """Tests the ftp push"""
-        conf = {
-            'path': '/tests/files/done/tmp',
-            'FTP_HOST': 'ftp_server',
-            'FTP_USER': 'test',
-            'FTP_PASSWORD': 'test',
-            'FTP_PORT': '21'
-        }
-        self.setup()
-        storage = FtpStorage(conf)
-        for file_name in TEST_FILE_LIST:
-            with open('./tests/files/' + file_name, 'rb') as tmpfile:
-                data = tmpfile.read()
-                storage.write_file(file_name, data)
-        storage.move_files()
-        self.teardown()
-
-    def test_ftp_read_and_delete(self):
-        """Tests the ftp pull"""
-        conf = {
-            'path': '/tests/files/done',
-            'FTP_HOST': 'ftp_server',
-            'FTP_USER': 'test',
-            'FTP_PASSWORD': 'test',
-            'FTP_PORT': '21'
-        }
-        storage = FtpStorage(conf)
-        result = storage.list_dir()
-        for file_name in result:
-            content = storage.read_file(file_name)
-            self.assertEqual(TEST_CONTENT, content)
-            storage.delete_file(file_name)
-
-        self.assertListEqual(sorted(result), sorted(TEST_FILE_LIST))
         result = storage.list_dir()
         self.assertEqual(len(result), 0)
 
