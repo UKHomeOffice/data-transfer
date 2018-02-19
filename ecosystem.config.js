@@ -26,7 +26,7 @@ module.exports = {
         LOG_LEVEL : "INFO",
         WRITE_FTP_USER : "foo",
         WRITE_FTP_PASSWORD : "pass",
-        WRITE_FTP_HOST : "localhost",
+        WRITE_FTP_HOST : "sftp_server",
         WRITE_FTP_PORT : 2222,
       }
     },
@@ -48,12 +48,12 @@ module.exports = {
         USE_IAM_CREDS : "False",
         READ_FTP_PASSWORD : "pass",
         READ_FTP_PORT : 2222,
-        READ_FTP_HOST : "localhost",
+        READ_FTP_HOST : "sftp_server",
         READ_FTP_USER : "foo",
         WRITE_AWS_SECRET_ACCESS_KEY : "verySecretKey1",
         WRITE_AWS_S3_BUCKET_NAME : "aws-ingest",
         WRITE_AWS_ACCESS_KEY_ID : "accessKey1",
-        WRITE_AWS_S3_HOST : "http://localhost:8000",
+        WRITE_AWS_S3_HOST : "http://s3server:8000",
         WRITE_AWS_S3_REGION: "eu-west-2",
       }
     },
@@ -76,7 +76,7 @@ module.exports = {
         READ_AWS_SECRET_ACCESS_KEY : "verySecretKey1",
         READ_AWS_S3_BUCKET_NAME : "aws-ingest",
         READ_AWS_ACCESS_KEY_ID : "accessKey1",
-        READ_AWS_S3_HOST : "http://localhost:8000",
+        READ_AWS_S3_HOST : "http://s3server:8000",
         READ_AWS_S3_REGION: "eu-west-2",
       }
     },

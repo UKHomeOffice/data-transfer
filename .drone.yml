@@ -1,0 +1,41 @@
+pipeline:
+
+  wait:
+    image: martin/wait:latest
+    commands:
+      - /wait -c sftp_server:2222,ftp_server:21,s3server:8000
+
+  make_bucket:
+    image: brentley/awscli
+    environment:
+      - AWS_ACCESS_KEY_ID=accessKey1
+      - AWS_SECRET_ACCESS_KEY=verySecretKey1
+    commands:
+      - aws --endpoint-url=http://s3server:8000 s3 mb s3://aws-ingest
+
+  build:
+    image: python:latest
+    commands:
+      - python3 -m venv .virtualenvs/data-transfer
+      - . .virtualenvs/data-transfer/bin/activate
+      - pip3 install -e . -r requirements.txt
+      - export PYTHONPATH=.
+#      - sleep 100000
+      - pytest tests
+
+
+services:
+  s3server:
+    environment:
+      - ENDPOINT=s3server
+      - BUCKET=aws-ingest
+    image: scality/s3server:latest
+
+  ftp_server:
+    image: onekilo79/ftpd_test:latest
+
+  sftp_server:
+    image: atmoz/sftp:alpine
+    commands:
+      - echo "Port 2222" >> /etc/ssh/sshd_config
+      - /entrypoint foo:pass:::upload
