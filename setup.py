@@ -21,7 +21,7 @@ setup(
     description=("A data movement app that can use different source/targets to"
                  "move data around."),
     keywords="data movement ftp sftp s3 buckets ingest",
-    license="BSD",
+    license="MIT",
     long_description=readme(),
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     scripts=['bin/data-transfer'],
