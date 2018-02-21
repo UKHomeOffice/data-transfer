@@ -185,6 +185,8 @@ configure the settings associated with the source storage type.
 +----------------------------+------------------------+--------------------------+
 |READ_AWS_S3_BUCKET_NAME     | aws-ingest             | Bucket name              |
 +----------------------------+------------------------+--------------------------+
+|READ_AWS_S3_ENCRYPT         | aws:kms                | ServerSideEncryption     |
++----------------------------+------------------------+--------------------------+
 |READ_AWS_S3_HOST            | http://localhost:8000  | URL of S3                |
 +----------------------------+------------------------+--------------------------+
 |READ_AWS_S3_REGION          | eu-west-1              | region for s3 bucket     |
@@ -212,6 +214,8 @@ configure the settings associated with the target storage type.
 |WRITE_AWS_SECRET_ACCESS_KEY | verysecret            | Secrey key              |
 +----------------------------+-----------------------+-------------------------+
 |WRITE_AWS_S3_BUCKET_NAME    | aws-ingest            | Bucket name             |
++----------------------------+-----------------------+-------------------------+
+|WRITE_AWS_S3_ENCRYPT        | aws:kms               | ServerSideEncryption    |
 +----------------------------+-----------------------+-------------------------+
 |WRITE_AWS_S3_HOST           | http://localhost:8000 | URL of S3               |
 +----------------------------+-----------------------+-------------------------+

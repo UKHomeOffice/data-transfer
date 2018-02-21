@@ -10,7 +10,7 @@ def readme():
 
 setup(
     name="data-transfer",
-    version="1.4.1",
+    version="1.5.1",
     author="Aker Systems",
     author_email="development@akersystems.com",
     classifiers=[
@@ -24,6 +24,9 @@ setup(
     license="MIT",
     long_description=readme(),
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+    install_requires=['sqlalchemy==1.0.14', 'coverage==4.4.2', 'pytest==3.2.5',
+                      'pytest-cov==2.5.1', 'pathlib==1.0.1', 'boto3==1.4.8',
+                      'schedule==0.5.0', 'paramiko==2.4.0'],
     scripts=['bin/data-transfer'],
     url="https://github.com/UKHomeOffice/data-transfer",
 )

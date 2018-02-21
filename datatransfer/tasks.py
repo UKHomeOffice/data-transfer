@@ -41,8 +41,7 @@ def storage_type(path, read_write):
     LOGGER.debug('Task - ReadStorage : ' + settings.READ_STORAGE_TYPE
                  + ' - WriteStorage : ' + settings.WRITE_STORAGE_TYPE)
     if read_write == 'r':
-        if ((settings.READ_STORAGE_TYPE.endswith('FtpStorage')) or
-                (settings.READ_STORAGE_TYPE.endswith('SftpStorage'))):
+        if (settings.READ_STORAGE_TYPE.endswith('SftpStorage')):
             conf = {
                 'path': path,
                 'FTP_HOST': settings.READ_FTP_HOST,
@@ -50,7 +49,7 @@ def storage_type(path, read_write):
                 'FTP_PASSWORD': settings.READ_FTP_PASSWORD,
                 'FTP_PORT': settings.READ_FTP_PORT
             }
-            LOGGER.info('Task - Setting read storage to FTP')
+            LOGGER.info('Task - Setting read storage to SFTP')
             return READSTORAGETYPE(conf)
         elif settings.READ_STORAGE_TYPE.endswith('S3Storage'):
             conf = {
@@ -59,6 +58,7 @@ def storage_type(path, read_write):
                 'AWS_S3_BUCKET_NAME': settings.READ_AWS_S3_BUCKET_NAME,
                 'AWS_ACCESS_KEY_ID': settings.READ_AWS_ACCESS_KEY_ID,
                 'AWS_SECRET_ACCESS_KEY': settings.READ_AWS_SECRET_ACCESS_KEY,
+                'AWS_S3_ENCRYPT': settings.READ_AWS_S3_ENCRYPT,
                 'AWS_S3_REGION': settings.READ_AWS_S3_REGION,
                 'USE_IAM_CREDS': settings.USE_IAM_CREDS,
             }
@@ -71,8 +71,7 @@ def storage_type(path, read_write):
             LOGGER.info('Task - Setting read storage to File server')
             return READSTORAGETYPE(conf)
     elif read_write == 'w':
-        if ((settings.WRITE_STORAGE_TYPE.endswith('FtpStorage')) or
-                (settings.WRITE_STORAGE_TYPE.endswith('SftpStorage'))):
+        if (settings.WRITE_STORAGE_TYPE.endswith('SftpStorage')):
             conf = {
                 'path': path,
                 'FTP_HOST': settings.WRITE_FTP_HOST,
@@ -80,7 +79,7 @@ def storage_type(path, read_write):
                 'FTP_PASSWORD': settings.WRITE_FTP_PASSWORD,
                 'FTP_PORT': settings.WRITE_FTP_PORT
             }
-            LOGGER.info('Task - Setting write storage to FTP/sFTP')
+            LOGGER.info('Task - Setting write storage to sFTP')
             return WRITESTORAGETYPE(conf)
         elif settings.WRITE_STORAGE_TYPE.endswith('S3Storage'):
             conf = {
@@ -89,6 +88,7 @@ def storage_type(path, read_write):
                 'AWS_S3_BUCKET_NAME': settings.WRITE_AWS_S3_BUCKET_NAME,
                 'AWS_ACCESS_KEY_ID': settings.WRITE_AWS_ACCESS_KEY_ID,
                 'AWS_SECRET_ACCESS_KEY': settings.WRITE_AWS_SECRET_ACCESS_KEY,
+                'AWS_S3_ENCRYPT': settings.WRITE_AWS_S3_ENCRYPT,
                 'AWS_S3_REGION': settings.WRITE_AWS_S3_REGION,
                 'USE_IAM_CREDS': settings.USE_IAM_CREDS,
             }
