@@ -21,7 +21,7 @@ setup(
     description=("A data movement app that can use different source/targets to"
                  "move data around."),
     keywords="data movement ftp sftp s3 buckets ingest",
-    license="BSD",
+    license="MIT",
     long_description=readme(),
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     install_requires=['sqlalchemy==1.0.14', 'coverage==4.4.2', 'pytest==3.2.5',
