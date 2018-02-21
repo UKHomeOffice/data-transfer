@@ -31,12 +31,14 @@ READ_AWS_SECRET_ACCESS_KEY = os.environ.get('READ_AWS_SECRET_ACCESS_KEY', 'veryS
 READ_AWS_S3_BUCKET_NAME = os.environ.get('READ_AWS_S3_BUCKET_NAME', 'aws-ingest')
 READ_AWS_S3_HOST = os.environ.get('READ_AWS_S3_HOST', 'http://s3server:8000')
 READ_AWS_S3_REGION = os.environ.get('READ_AWS_S3_REGION', 'eu-west-2')
+READ_AWS_S3_ENCRYPT = os.environ.get('READ_AWS_S3_ENCRYPT', False)
 
 WRITE_AWS_ACCESS_KEY_ID = os.environ.get('WRITE_AWS_ACCESS_KEY_ID', 'accessKey1')
 WRITE_AWS_SECRET_ACCESS_KEY = os.environ.get('WRITE_AWS_SECRET_ACCESS_KEY', 'verySecretKey1')
 WRITE_AWS_S3_BUCKET_NAME = os.environ.get('WRITE_AWS_S3_BUCKET_NAME', 'aws-ingest')
 WRITE_AWS_S3_HOST = os.environ.get('WRITE_AWS_S3_HOST', 'http://s3server:8000')
 WRITE_AWS_S3_REGION = os.environ.get('WRITE_AWS_S3_REGION', 'eu-west-2')
+WRITE_AWS_S3_ENCRYPT = os.environ.get('WRITE_AWS_S3_ENCRYPT', False)
 
 #Max number of files to process at a time.
 MAX_FILES_BATCH = int(os.environ.get('MAX_FILES_BATCH', 25))
