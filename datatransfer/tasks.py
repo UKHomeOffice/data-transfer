@@ -58,6 +58,7 @@ def storage_type(path, read_write):
                 'AWS_S3_BUCKET_NAME': settings.READ_AWS_S3_BUCKET_NAME,
                 'AWS_ACCESS_KEY_ID': settings.READ_AWS_ACCESS_KEY_ID,
                 'AWS_SECRET_ACCESS_KEY': settings.READ_AWS_SECRET_ACCESS_KEY,
+                'AWS_S3_ENCRYPT': settings.READ_AWS_S3_ENCRYPT,
                 'AWS_S3_REGION': settings.READ_AWS_S3_REGION,
                 'USE_IAM_CREDS': settings.USE_IAM_CREDS,
             }
@@ -87,6 +88,7 @@ def storage_type(path, read_write):
                 'AWS_S3_BUCKET_NAME': settings.WRITE_AWS_S3_BUCKET_NAME,
                 'AWS_ACCESS_KEY_ID': settings.WRITE_AWS_ACCESS_KEY_ID,
                 'AWS_SECRET_ACCESS_KEY': settings.WRITE_AWS_SECRET_ACCESS_KEY,
+                'AWS_S3_ENCRYPT': settings.WRITE_AWS_S3_ENCRYPT,
                 'AWS_S3_REGION': settings.WRITE_AWS_S3_REGION,
                 'USE_IAM_CREDS': settings.USE_IAM_CREDS,
             }
