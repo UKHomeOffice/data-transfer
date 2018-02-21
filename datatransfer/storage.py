@@ -532,7 +532,6 @@ class S3Storage:
         self.path = utils.chop_end_of_string(conf.get('path'), '/tmp')
         self.bucket = get_bucket(conf.get('AWS_S3_BUCKET_NAME'), conf)
         LOGGER.debug('S3 - Path: ' + self.path)
-        conf.update(ServerSideEncryption="aws:kms")
 
     def list_dir(self):
         """Lists the contents of the S3 bucket.
@@ -614,7 +613,7 @@ class S3Storage:
                 file_obj.write(content)
                 file_obj.flush()
                 file_obj.seek(0)
-                self.bucket.upload_fileobj(file_obj, self.path + '/' + file_name)
+                self.bucket.upload_fileobj(file_obj, self.path + '/' + file_name, dict(ServerSideEncryption='aws:kms'))
                 return True
 
         except botocore.exceptions.ClientError as err:
