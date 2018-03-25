@@ -142,6 +142,8 @@ the default value is used:
 +---------------------+----------------------+-----------+-----------------------------------+
 |FOLDER_DATE_OUTPUT   | False                | No        | Moves files to YYYY / MM / DD     |
 +---------------------+----------------------+-----------+-----------------------------------+
+|TEMP_FOLDER_NAME     | tmp                  | No        | Temp folder name for dual write   |
++---------------------+----------------------+-----------+-----------------------------------+
 |LOG_LEVEL            | INFO                 | No        | Log level                         |
 +---------------------+----------------------+-----------+-----------------------------------+
 |LOG_FILE_NAME        | data-transfer.log    | Yes       | Filename for log output           |
@@ -162,6 +164,10 @@ Note: the read and write storage types need to be prefixed and options are:
 * Also ensure that the source and destination paths have the correct leading and
 trailing slashes, this will depend on the storage type and the OS. See the
 ecosystem.config file for examples.
+
+* When running two or more data-transfer apps to the same target folde, Ensure
+you have set the TEMP_FOLDER_NAME variable for each to be different. This stops
+any potential rafce conditions on the moving of the files.
 
 
 Source / read settings

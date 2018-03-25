@@ -139,9 +139,9 @@ def process_files(source=settings.INGEST_SOURCE_PATH,
                 dest = dest + sep + utils.get_date_based_folder()
 
         if dest.endswith(sep):
-            dest = dest + 'tmp'
+            dest = dest + settings.TMP_FOLDER_NAME
         else:
-            dest = dest + sep + 'tmp'
+            dest = dest + sep + settings.TMP_FOLDER_NAME
 
         read_storage = storage_type(source, 'r')
         write_storage = storage_type(dest, 'w')

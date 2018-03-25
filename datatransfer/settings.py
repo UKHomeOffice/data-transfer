@@ -47,6 +47,7 @@ FOLDER_DATE_OUTPUT = os.environ.get('FOLDER_DATE_OUTPUT', 'False')
 LOG_LEVEL = os.environ.get('LOG_LEVEL', 'DEBUG')
 LOG_FILE_NAME = os.environ.get('LOG_FILE_NAME', 'data-transfer-app.log')
 USE_IAM_CREDS = os.environ.get('USE_IAM_CREDS', 'False')
+TMP_FOLDER_NAME = os.environ.get('TEMP_FOLDER_NAME', 'tmp')
 
 #  Loggin config
 DICTLOGCONFIG = {
@@ -56,7 +57,7 @@ DICTLOGCONFIG = {
             'class': 'logging.handlers.RotatingFileHandler',
             'formatter': 'myFormatter',
             'filename': LOG_FILE_NAME,
-            'maxBytes': 10485760,
+            'maxBytes': 5,
         }
     },
     'root':  {
