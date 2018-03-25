@@ -363,7 +363,7 @@ class SftpStorage:
         LOGGER.debug('sFTP - Move files : ' + self.path)
         try:
             source = self.path
-            dest = utils.chop_end_of_string(source, '/' + settings.TMP_FOLDER_NAME')
+            dest = utils.chop_end_of_string(source, '/' + settings.TMP_FOLDER_NAME)
             files = self.list_dir()
             LOGGER.debug('sFTP - Destination folder : ' + dest)
             for filename in files:
