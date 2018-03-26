@@ -3,7 +3,7 @@ pipeline:
   wait:
     image: martin/wait:latest
     commands:
-      - /wait -c sftp_server:2222,s3server:8000
+      - /wait -c s3server:8000,sftp_server:2222
 
   make_bucket:
     image: brentley/awscli
@@ -23,14 +23,14 @@ pipeline:
       - pytest tests
 
 services:
-  s3server:
-    environment:
-      - ENDPOINT=s3server
-      - BUCKET=aws-ingest
-    image: scality/s3server:latest
-
   sftp_server:
     image: atmoz/sftp:alpine
     commands:
       - echo "Port 2222" >> /etc/ssh/sshd_config
       - /entrypoint foo:pass:::upload
+
+  s3server:
+    environment:
+      - ENDPOINT=s3server
+      - BUCKET=aws-ingest
+    image: scality/s3server:latest

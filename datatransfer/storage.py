@@ -10,10 +10,10 @@ import tempfile
 import boto3
 import botocore
 import paramiko
+from datatransfer import settings
 from datatransfer import utils
 
 LOGGER = logging.getLogger(__name__)
-
 
 class FolderStorage:
     """Abstraction for using a local directory for storage.
@@ -131,7 +131,7 @@ class FolderStorage:
         LOGGER.debug('Folder - Move files : ' + self.path)
         try:
             source = self.path
-            dest = utils.chop_end_of_string(source, (os.sep + 'tmp'))
+            dest = utils.chop_end_of_string(source, (os.sep + settings.TMP_FOLDER_NAME))
             files = os.listdir(source)
 
             for filename in files:
@@ -363,7 +363,7 @@ class SftpStorage:
         LOGGER.debug('sFTP - Move files : ' + self.path)
         try:
             source = self.path
-            dest = utils.chop_end_of_string(source, '/tmp')
+            dest = utils.chop_end_of_string(source, '/' + settings.TMP_FOLDER_NAME)
             files = self.list_dir()
             LOGGER.debug('sFTP - Destination folder : ' + dest)
             for filename in files:

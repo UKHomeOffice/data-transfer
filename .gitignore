@@ -23,3 +23,6 @@ coverage.xml
 
 #logs
 *.log
+
+#virtualenvs
+.virtualenvs
