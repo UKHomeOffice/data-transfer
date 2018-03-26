@@ -165,9 +165,9 @@ Note: the read and write storage types need to be prefixed and options are:
 trailing slashes, this will depend on the storage type and the OS. See the
 ecosystem.config file for examples.
 
-* When running two or more data-transfer apps to the same target folde, Ensure
+* When running two or more data-transfer apps to the same target folder, Ensure
 you have set the TEMP_FOLDER_NAME variable for each to be different. This stops
-any potential rafce conditions on the moving of the files.
+any potential race conditions on the moving of the files.
 
 
 Source / read settings
