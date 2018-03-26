@@ -518,7 +518,7 @@ class S3Storage:
     """Abstraction for using an S3 bucket for storage.
 
     Can list the contents of the S3 bucket and supports read, write and delete
-    operations on the S3 bucket. Note /tmp is removed from the path as the file
+    operations on the S3 bucket. Note /TMP_FOLDER_NAME is removed from the path as the file
     lock prevention is not required on S3.
 
     Parameters
@@ -529,7 +529,7 @@ class S3Storage:
     """
     def __init__(self, conf):
         LOGGER.debug('S3 - Set storage type to S3 Bucket')
-        self.path = utils.chop_end_of_string(conf.get('path'), '/tmp')
+        self.path = utils.chop_end_of_string(conf.get('path'), ('/' + settings.TMP_FOLDER_NAME))
         self.bucket = get_bucket(conf.get('AWS_S3_BUCKET_NAME'), conf)
         LOGGER.debug('S3 - Path: ' + self.path)
         self.transfer_conf = dict()
