@@ -22,6 +22,21 @@ pipeline:
       - export PYTHONPATH=.
       - pytest tests
 
+  image_to_quay:
+    image: quay.io/ukhomeofficedigital/drone-docker
+    secrets:
+      - docker_password
+    environment:
+      - DOCKER_USERNAME=ukhomeofficedigital+<your_robot_username>
+    registry: quay.io
+    repo: quay.io/ukhomeofficedigital/<your_quay_repo>
+    tags:
+      - ${DRONE_COMMIT_SHA}
+      - latest
+    when:
+      branch: master
+      event: push
+
 services:
   sftp_server:
     image: atmoz/sftp:alpine
