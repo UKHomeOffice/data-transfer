@@ -1,0 +1,25 @@
+version: "3"
+services:
+
+  s3server:
+    image: scality/s3server:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - ENDPOINT=s3server
+      - BUCKET=aws-ingest
+
+  sftp_server:
+    image: atmoz/sftp:alpine
+    ports:
+      - "2222:22"
+    command: /entrypoint foo:pass:::upload
+
+  aws_cli:
+    image: brentley/awscli
+    environment:
+      - AWS_ACCESS_KEY_ID=accessKey1
+      - AWS_SECRET_ACCESS_KEY=verySecretKey1
+    depends_on:
+      - s3server
+    command: --endpoint-url=http://s3server:8000 s3 mb s3://aws-ingest
