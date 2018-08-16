@@ -13,7 +13,7 @@ pipeline:
     commands:
       - aws --endpoint-url=http://s3server:8000 s3 mb s3://aws-ingest
 
-  build:
+  test:
     image: python:latest
     commands:
       - python3 -m venv .virtualenvs/data-transfer
@@ -21,6 +21,31 @@ pipeline:
       - pip3 install -e . -r requirements.txt
       - export PYTHONPATH=.
       - pytest tests
+
+  build:
+    image: docker:17.09.1
+    environment:
+      - DOCKER_HOST=tcp://172.17.0.1:2375
+    commands:
+      - docker build -t data-transfer .
+    when:
+      branch: master
+      event: push
+
+  image_to_quay:
+    image: docker:17.09.1
+    secrets:
+      - docker_username
+      - docker_password
+    environment:
+      - DOCKER_HOST=tcp://172.17.0.1:2375
+    commands:
+      - docker login -u=$${DOCKER_USERNAME} -p=$${DOCKER_PASSWORD} quay.io
+      - docker tag data-transfer quay.io/ukhomeofficedigital/data-transfer:$${DRONE_COMMIT_SHA}
+      - docker push quay.io/ukhomeofficedigital/data-transfer:$${DRONE_COMMIT_SHA}
+    when:
+      branch: master
+      event: push
 
 services:
   sftp_server:
