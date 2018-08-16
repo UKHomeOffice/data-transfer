@@ -6,10 +6,10 @@ WORKDIR /data-transfer
 RUN pip3 install -e . -r requirements.txt
 
 # Create user and change folder permissions
-RUN groupadd -r datatransfer && useradd --no-log-init -r -g datatransfer datatransfer && \
+RUN groupadd -r datatransfer && useradd -r -g datatransfer -u 1000 datatransfer && \
     chown -R datatransfer:datatransfer /data-transfer
 
-USER datatransfer
+USER 1000 
 
 ENV PYTHONPATH /data-transfer
 
