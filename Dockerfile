@@ -9,6 +9,8 @@ RUN pip3 install -e . -r requirements.txt
 RUN groupadd -r datatransfer && useradd --no-log-init -r -g datatransfer datatransfer && \
     chown -R datatransfer:datatransfer /data-transfer
 
+USER datatransfer
+
 ENV PYTHONPATH /data-transfer
 
 ENTRYPOINT [ "bin/data-transfer" ]
