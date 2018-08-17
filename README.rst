@@ -154,6 +154,8 @@ the default value is used:
 +---------------------+----------------------+-----------+-----------------------------------+
 |WRITE_STORAGE_TYPE   | See footnote         | Yes       | The type of write storage         |
 +---------------------+----------------------+-----------+-----------------------------------+
+|COPY_FILES           | False                | No        | Do not delete from source if true |
++---------------------+----------------------+-----------+-----------------------------------+
 
 Note: the read and write storage types need to be prefixed and options are:
 
