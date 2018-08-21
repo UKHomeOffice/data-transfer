@@ -203,6 +203,19 @@ class TestStorage(unittest.TestCase):
         self.assertEqual(utils.chop_end_of_string(val, rem2), result2)
         self.assertEqual(utils.chop_end_of_string(val, rem3), result1)
 
+    def test_copy_files_local(self):
+        """Tests files are not removed from local source when copying"""
+        self.setup()
+        conf = {
+            'path': 'tests/files'
+        }
+        process_files('tests/files', 'tests/files/done', "True")
+        storage_source = FolderStorage(conf)
+        storage_dest = FolderStorage({'path': 'tests/files/done'})
+        source = storage_source.list_dir()
+        dest = storage_dest.list_dir()
+        self.assertEqual(source, dest)
+        self.assertNotEqual(len(source), 0)
 
     def teardown(self):
         """"Teardown: also tests the folder storage delete function"""

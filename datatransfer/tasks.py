@@ -103,7 +103,8 @@ def storage_type(path, read_write):
 
 
 def process_files(source=settings.INGEST_SOURCE_PATH,
-                  dest=settings.INGEST_DEST_PATH):
+                  dest=settings.INGEST_DEST_PATH,
+                  copy_files=settings.COPY_FILES):
     """Processes the files found at the source storage.
 
     This task can be run to move the files from the source path to the new path.
@@ -158,7 +159,8 @@ def process_files(source=settings.INGEST_SOURCE_PATH,
         try:
             contents = read_storage.read_file(file_name)
             write_storage.write_file(file_name, contents)
-            read_storage.delete_file(file_name)
+            if copy_files.capitalize() == "False":
+                read_storage.delete_file(file_name)
             if not settings.WRITE_STORAGE_TYPE.endswith('S3Storage'):
                 write_storage.move_files()
 

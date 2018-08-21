@@ -48,6 +48,7 @@ LOG_LEVEL = os.environ.get('LOG_LEVEL', 'DEBUG')
 LOG_FILE_NAME = os.environ.get('LOG_FILE_NAME', 'data-transfer-app.log')
 USE_IAM_CREDS = os.environ.get('USE_IAM_CREDS', 'False')
 TMP_FOLDER_NAME = os.environ.get('TEMP_FOLDER_NAME', 'tmp')
+COPY_FILES = os.environ.get('COPY_FILES', 'False')
 
 #  Loggin config
 DICTLOGCONFIG = {
