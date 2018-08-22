@@ -668,31 +668,31 @@ class S3Storage:
         LOGGER.debug('S3 - Exit function')
 
 class RedisStorage:
-
+    """Abstraction for using a redis instance for storing and retrieving filenames
+    Used for storing, retrieving and listing filenames from a redis instance.        
+    
+    Parameters
+    ----------
+    conf : dict of 'str' : 'str'
+      used to provide connection information.
+    """
     def __init__(self, conf, redis=redis):
-
         LOGGER.debug('Redis - Set storage type to redis: ')
-
         try:
             self.r = redis.Redis(
                 host = conf.get('host'),
                 port = conf.get('port'),
                 password = conf.get('password'))
-
         except redis.ConnectionError as err:
             LOGGER.error('Redis - Error connecting to redis server :' + ' - ' + repr(err))
             raise
-
         except redis.AuthenticationError as err:
             LOGGER.error('Redis - Error authenticating to redis server :' + ' - ' + repr(err))
             raise
-
         self.redis_key = conf.get('redis_key')
-
         LOGGER.debug('Redis - Set redis key: ' + self.redis_key)
 
     def list_dir(self):
-
         """Lists contents of redis key.
 
         Returns
@@ -702,14 +702,11 @@ class RedisStorage:
 
         """
         LOGGER.debug('Redis - List redis key contents: ' + self.redis_key)
-
         try:
             return self.r.lrange(self.redis_key, 0, -1)
-
         except Exception as err:
             LOGGER.exception('Redis - Unexpected error ' + repr(err))
             raise
-
     def write_file(self, file_name):
         """Write a filename to a redis key.
 
@@ -721,15 +718,12 @@ class RedisStorage:
 
         """
         LOGGER.debug('Redis - Write filename to redis key : ' + file_name)
-
         try:
             self.r.rpush(self.redis_key, file_name)
-
         except Exception as err:
             LOGGER.exception('Redis - Unexpected error ' + repr(err))
             raise
-
-    def remove_file(self, file_name):
+    def delete_file(self, file_name):
         """Remove a filename from a redis key.
 
         Parameters
