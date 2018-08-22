@@ -23,10 +23,10 @@ class TestRedisStorage(unittest.TestCase):
         self.assertIsNone(self.redis_storage.write_file('aaa'))
         self.redis_obj.rpush.assert_called_with('foo', 'aaa')
 
-    def test_remove_file(self):
+    def test_delete_file(self):
         self.setup()
-        self.redis_storage.remove_file('aaa')
-        self.assertIsNone(self.redis_storage.remove_file('aaa'))
+        self.redis_storage.delete_file('aaa')
+        self.assertIsNone(self.redis_storage.delete_file('aaa'))
         self.redis_obj.lrem.assert_called_with('foo', 'aaa')
 
 
