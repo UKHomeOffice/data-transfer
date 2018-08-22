@@ -12,6 +12,8 @@ import botocore
 import paramiko
 from datatransfer import settings
 from datatransfer import utils
+import redis
+# from redislite import Redis
 
 LOGGER = logging.getLogger(__name__)
 
@@ -664,3 +666,68 @@ class S3Storage:
 
     def exit(self):
         LOGGER.debug('S3 - Exit function')
+
+class RedisStorage:
+
+    def __init__(self, conf, redis=redis):
+
+        LOGGER.debug('Redis - Set storage type to redis: ')
+
+        try:
+            self.r = redis.Redis(
+                host = conf.get('host'),
+                port = conf.get('port'),
+                password = conf.get('password'))
+
+        except redis.ConnectionError as err:
+            LOGGER.error('Redis - Error connecting to redis server :' + ' - ' + repr(err))
+            raise
+
+        except redis.AuthenticationError as err:
+            LOGGER.error('Redis - Error authenticating to redis server :' + ' - ' + repr(err))
+            raise
+
+        self.redis_key = conf.get('redis_key')
+
+        LOGGER.debug('Redis - Set redis key: ' + self.redis_key)
+
+    def list_dir(self):
+
+        """Lists contents of redis key.
+
+        Returns
+        -------
+        :list: 'list' of b'str'
+            A list of all the filename for a configured redis key.
+
+        """
+        LOGGER.debug('Redis - List redis key contents: ' + self.redis_key)
+
+        try:
+            return self.r.lrange(self.redis_key, 0, -1)
+
+        except Exception as err:
+            LOGGER.exception('Redis - Unexpected error ' + repr(err))
+            raise
+
+    def write_file(self, file_name):
+        """Write a filename to a redis key.
+
+        Parameters
+        ----------
+        file_name : str
+            Name of the file to write; including the file extension but not
+            the file's path.
+
+        """
+        LOGGER.debug('Redis - Write filename to redis key : ' + file_name)
+
+        try:
+            self.r.rpush(self.redis_key, file_name)
+
+        except Exception as err:
+            LOGGER.exception('Redis - Unexpected error ' + repr(err))
+            raise
+
+    def remove_file(self, file_name):
+        return self.r.lrem(self.redis_key, file_name)

@@ -9,8 +9,10 @@ from datatransfer import settings
 from datatransfer.storage import FolderStorage
 from datatransfer.storage import S3Storage
 from datatransfer.storage import SftpStorage
+from datatransfer.storage import RedisStorage
 from datatransfer.tasks import process_files
 from datatransfer import utils
+# from redislite import Redis
 
 
 # Create your tests here.
@@ -211,3 +213,10 @@ class TestStorage(unittest.TestCase):
 
         for files in TEST_FILE_LIST:
             os.remove(os.path.join('./tests/files', files))
+
+# class TestRedisStorage(unittest.Testcase):
+#     def test_add_file_reference(self):
+#         redis = RedisStorage()
+#         key_value_pair = ["foo", "bar"]
+#         redis.add_file_reference(key_value_pair)
+#         assert redis.get_keys == "foo"
