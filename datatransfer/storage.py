@@ -689,8 +689,8 @@ class RedisStorage:
         except redis.AuthenticationError as err:
             LOGGER.error('Redis - Error authenticating to redis server :' + ' - ' + repr(err))
             raise
-        self.redis_key = conf.get('redis_key')
-        LOGGER.debug('Redis - Set redis key: ' + self.redis_key)
+        self.path = conf.get('path')
+        LOGGER.debug('Redis - Set redis key: ' + self.path)
 
     def list_dir(self):
         """Lists contents of redis key.
@@ -701,9 +701,9 @@ class RedisStorage:
             A list of all the filename for a configured redis key.
 
         """
-        LOGGER.debug('Redis - List redis key contents: ' + self.redis_key)
+        LOGGER.debug('Redis - List redis key contents: ' + self.path)
         try:
-            return self.redis.lrange(self.redis_key, 0, -1)
+            return self.redis.lrange(self.path, 0, -1)
         except Exception as err:
             LOGGER.exception('Redis - Unexpected error ' + repr(err))
             raise
@@ -720,7 +720,7 @@ class RedisStorage:
         """
         LOGGER.debug('Redis - Write filename to redis key : ' + file_name)
         try:
-            self.redis.rpush(self.redis_key, file_name)
+            self.redis.rpush(self.path, file_name)
         except Exception as err:
             LOGGER.exception('Redis - Unexpected error ' + repr(err))
             raise
@@ -737,7 +737,7 @@ class RedisStorage:
         """
         LOGGER.debug('Redis - Write filename to redis key : ' + file_name)
         try:
-            return self.redis.lrem(self.redis_key, file_name)
+            return self.redis.lrem(self.path, file_name)
 
         except Exception as err:
             LOGGER.exception('Redis - Unexpected error ' + repr(err))
