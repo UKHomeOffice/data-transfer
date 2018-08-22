@@ -679,7 +679,7 @@ class RedisStorage:
     def __init__(self, conf, redis=redis):
         LOGGER.debug('Redis - Set storage type to redis: ')
         try:
-            self.r = redis.Redis(
+            self.redis = redis.Redis(
                 host = conf.get('host'),
                 port = conf.get('port'),
                 password = conf.get('password'))
@@ -697,16 +697,17 @@ class RedisStorage:
 
         Returns
         -------
-        :list: 'list' of b'str'
+        list: of b'str'
             A list of all the filename for a configured redis key.
 
         """
         LOGGER.debug('Redis - List redis key contents: ' + self.redis_key)
         try:
-            return self.r.lrange(self.redis_key, 0, -1)
+            return self.redis.lrange(self.redis_key, 0, -1)
         except Exception as err:
             LOGGER.exception('Redis - Unexpected error ' + repr(err))
             raise
+
     def write_file(self, file_name):
         """Write a filename to a redis key.
 
@@ -719,10 +720,11 @@ class RedisStorage:
         """
         LOGGER.debug('Redis - Write filename to redis key : ' + file_name)
         try:
-            self.r.rpush(self.redis_key, file_name)
+            self.redis.rpush(self.redis_key, file_name)
         except Exception as err:
             LOGGER.exception('Redis - Unexpected error ' + repr(err))
             raise
+
     def delete_file(self, file_name):
         """Remove a filename from a redis key.
 
@@ -735,7 +737,7 @@ class RedisStorage:
         """
         LOGGER.debug('Redis - Write filename to redis key : ' + file_name)
         try:
-            return self.r.lrem(self.redis_key, file_name)
+            return self.redis.lrem(self.redis_key, file_name)
 
         except Exception as err:
             LOGGER.exception('Redis - Unexpected error ' + repr(err))
