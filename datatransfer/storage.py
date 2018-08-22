@@ -730,4 +730,19 @@ class RedisStorage:
             raise
 
     def remove_file(self, file_name):
-        return self.r.lrem(self.redis_key, file_name)
+        """Remove a filename from a redis key.
+
+        Parameters
+        ----------
+        file_name : str
+            Name of the file to remove; including the file extension but not
+            the file's path.
+
+        """
+        LOGGER.debug('Redis - Write filename to redis key : ' + file_name)
+        try:
+            return self.r.lrem(self.redis_key, file_name)
+
+        except Exception as err:
+            LOGGER.exception('Redis - Unexpected error ' + repr(err))
+            raise
