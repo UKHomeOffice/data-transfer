@@ -73,9 +73,9 @@ def storage_type(path, read_write):
         elif settings.READ_STORAGE_TYPE.endswith('RedisStorage'):
             conf = {
                 'path': path,
-        'host': settings.READ_REDIS_HOST,
-        'port': settings.READ_REDIS_PORT,
-        'password': settings.READ_REDIS_PASSWORD,
+                'host': settings.READ_REDIS_HOST,
+                'port': settings.READ_REDIS_PORT,
+                'password': settings.READ_REDIS_PASSWORD,
             }
             LOGGER.info('Task - Setting read storage to Redis')
         return READSTORAGETYPE(conf)
@@ -113,9 +113,9 @@ def storage_type(path, read_write):
         elif settings.WRITE_STORAGE_TYPE.endswith('RedisStorage'):
             conf = {
                 'path': path,
-        'host': settings.WRITE_REDIS_HOST,
-        'port': settings.WRITE_REDIS_PORT,
-        'password': settings.WRITE_REDIS_PASSWORD,
+                'host': settings.WRITE_REDIS_HOST,
+                'port': settings.WRITE_REDIS_PORT,
+                'password': settings.WRITE_REDIS_PASSWORD,
             }
             LOGGER.info('Task - Settings write storage to Redis')
         return WRITESTORAGETYPE(conf)
@@ -159,7 +159,7 @@ def process_files(source=settings.INGEST_SOURCE_PATH,
 
         if dest.endswith(sep):
             dest = dest + settings.TMP_FOLDER_NAME
-        else:
+        elif not settings.WRITE_STORAGE_TYPE.endswith('RedisStorage'):
             dest = dest + sep + settings.TMP_FOLDER_NAME
 
         read_storage = storage_type(source, 'r')
@@ -179,7 +179,7 @@ def process_files(source=settings.INGEST_SOURCE_PATH,
             write_storage.write_file(file_name, contents)
             if copy_files.capitalize() == "False":
                 read_storage.delete_file(file_name)
-            if not settings.WRITE_STORAGE_TYPE.endswith('S3Storage'):
+            if not settings.WRITE_STORAGE_TYPE.endswith(('S3Storage', 'RedisStorage')):
                 write_storage.move_files()
 
         except Exception as err:
