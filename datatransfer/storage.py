@@ -756,3 +756,46 @@ class RedisStorage:
 
     def exit(self):
         LOGGER.debug('Redis - Exit function')
+
+
+class MessageQueue:
+    """Abstraction for MQ interaction. 
+    MessageQueue will allow for the publishing and consumption of event from a queue.
+    Currently MessageQueue only supports RabbitMQ
+
+    Parameters
+    ----------
+    conf: dict of 'str' : 'str'
+        Provides connection details for the message queue.
+    """
+    def __init__(self, conf):
+        """
+        conf: host, port, queue_name
+        """
+        LOGGER.debug('MessageQueue - Creating MessageQueue instance')
+        try:
+            credentials = pika.PlainCredentials('user', 'pass')
+            connection = pika.BlockingConnection(pika.ConnectionParameters(host=conf.get('host'), 
+                                                                           port=int(conf.get('port')
+                                                                           credentials=credentials))
+            self.channel = connection.channel()
+            LOGGER.debug('MessageQueue - Connection established')
+            channel.queue_declare(queue=conf.get('queue_name'))
+	except Exception as err:
+	    LOGGER.exception('MessageQueue - Unexpected error ' + repr(err))
+	    raise
+	    	
+
+    def publish_event(self, event):
+        """
+        Publish event to queue
+        """
+        pass
+
+    def consume(self, callback):
+        """
+        Consume queue and apply callback to events
+        """
+        pass
+
+
