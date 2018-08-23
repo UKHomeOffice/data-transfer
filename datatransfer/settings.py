@@ -40,6 +40,14 @@ WRITE_AWS_S3_HOST = os.environ.get('WRITE_AWS_S3_HOST', 'http://s3server:8000')
 WRITE_AWS_S3_REGION = os.environ.get('WRITE_AWS_S3_REGION', 'eu-west-2')
 WRITE_AWS_S3_ENCRYPT = os.environ.get('WRITE_AWS_S3_ENCRYPT', False)
 
+READ_REDIS_HOST = os.environ.get('READ_REDIS_HOST', 'localhost')
+READ_REDIS_PORT = os.environ.get('READ_REDIS_PORT', '6379')
+READ_REDIS_PASSWORD = os.environ.get('READ_REDIS_PASSWORD', None)
+
+WRITE_REDIS_HOST = os.environ.get('WRITE_REDIS_HOST', 'localhost')
+WRITE_REDIS_PORT = os.environ.get('WRITE_REDIS_PORT', '6379')
+WRITE_REDIS_PASSWORD = os.environ.get('WRITE_REDIS_PASSWORD', None)
+
 #Max number of files to process at a time.
 MAX_FILES_BATCH = int(os.environ.get('MAX_FILES_BATCH', 25))
 PROCESS_INTERVAL = int(os.environ.get('PROCESS_INTERVAL', 5))
