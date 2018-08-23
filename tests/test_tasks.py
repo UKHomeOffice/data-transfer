@@ -226,10 +226,3 @@ class TestStorage(unittest.TestCase):
 
         for files in TEST_FILE_LIST:
             os.remove(os.path.join('./tests/files', files))
-
-# class TestRedisStorage(unittest.Testcase):
-#     def test_add_file_reference(self):
-#         redis = RedisStorage()
-#         key_value_pair = ["foo", "bar"]
-#         redis.add_file_reference(key_value_pair)
-#         assert redis.get_keys == "foo"
