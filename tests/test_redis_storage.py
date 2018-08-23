@@ -7,7 +7,7 @@ class TestRedisStorage(unittest.TestCase):
     def setup(self):
         self.redis = MagicMock()
         self.redis_obj = MagicMock()
-        self.redis_obj.lrange.return_value = ['ke', 'ke']
+        self.redis_obj.lrange.return_value = [b'ke', b'ke']
         self.redis_obj.rpush.return_value = 1
         self.redis_obj.lrem.return_value = None
         self.redis.Redis = MagicMock(return_value = self.redis_obj)
@@ -15,7 +15,7 @@ class TestRedisStorage(unittest.TestCase):
 
     def test_list_dir(self):
         self.setup()
-        assert self.redis_storage.list_dir() == ['ke', 'ke']
+        assert self.redis_storage.list_dir() == [b'ke', b'ke']
         self.redis_obj.lrange.assert_called()
 
     def test_write_file_not_exists(self):
@@ -26,7 +26,6 @@ class TestRedisStorage(unittest.TestCase):
 
     def test_write_file_exists(self):
         self.setup()
-        self.redis_storage.write_file('ke', 'ke')
         self.assertIsNone(self.redis_storage.write_file('ke', 'ke'))
 
 
