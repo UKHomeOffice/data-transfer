@@ -717,6 +717,11 @@ class RedisStorage:
             Name of the file to write; including the file extension but not
             the file's path.
 
+        Returns
+        -------
+        bool
+            returns True once the file is successfully written to redis.
+
         """
         LOGGER.debug('Redis - Write filename to redis key : ' + file_name)
         if file_name.encode() not in self.list_dir():
@@ -734,6 +739,11 @@ class RedisStorage:
         ----------
         file_name : str
             Name of the file to remove
+
+        Returns
+        -------
+        bool
+            return True once file is successfully deleted from redis.
 
         """
         LOGGER.debug('Redis - Deleting filename from redis key : ' + file_name)
