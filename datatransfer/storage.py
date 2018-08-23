@@ -669,8 +669,8 @@ class S3Storage:
 
 class RedisStorage:
     """Abstraction for using a redis instance for storing and retrieving filenames
-    Used for storing, retrieving and listing filenames from a redis instance.        
-    
+    Used for storing, retrieving and listing filenames from a redis instance.
+
     Parameters
     ----------
     conf : dict of 'str' : 'str'
@@ -708,7 +708,7 @@ class RedisStorage:
             LOGGER.exception('Redis - Unexpected error ' + repr(err))
             raise
 
-    def write_file(self, file_name):
+    def write_file(self, file_name, _content):
         """Write a filename to a redis key.
 
         Parameters
@@ -719,11 +719,13 @@ class RedisStorage:
 
         """
         LOGGER.debug('Redis - Write filename to redis key : ' + file_name)
-        try:
-            self.redis.rpush(self.path, file_name)
-        except Exception as err:
-            LOGGER.exception('Redis - Unexpected error ' + repr(err))
-            raise
+        if file_name.encode() not in self.list_dir():
+            try:
+                self.redis.rpush(self.path, file_name)
+                return True
+            except Exception as err:
+                LOGGER.exception('Redis - Unexpected error ' + repr(err))
+                raise
 
     def delete_file(self, file_name):
         """Remove a filename from a redis key.
@@ -731,14 +733,16 @@ class RedisStorage:
         Parameters
         ----------
         file_name : str
-            Name of the file to remove; including the file extension but not
-            the file's path.
+            Name of the file to remove
 
         """
-        LOGGER.debug('Redis - Write filename to redis key : ' + file_name)
+        LOGGER.debug('Redis - Deleting filename from redis key : ' + file_name)
         try:
-            return self.redis.lrem(self.path, file_name)
-
+            self.redis.lrem(self.path, file_name)
+            return True
         except Exception as err:
             LOGGER.exception('Redis - Unexpected error ' + repr(err))
             raise
+
+    def exit(self):
+        LOGGER.debug('Redis - Exit function')
