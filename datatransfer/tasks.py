@@ -168,6 +168,16 @@ def process_files(source=settings.INGEST_SOURCE_PATH,
         LOGGER.exception('Main - Error with storage ' + repr(err))
         raise
 
+    if settings.WRITE_MQ.capitalize() == "True":
+        LOGGER.info('Main - Publish to MessageQueue: True')
+        conf = {'host': settings.WRITE_MQ_HOST,
+                'port': settings.WRITE_MQ_PORT,
+                'queue_name': settings.WRITE_MQ_PATH}
+        if settings.WRITE_MQ_USERNAME is not None:
+            conf["username"] = settings.WRITE_MQ_USERNAME
+            conf["password"] = settings.WRITE_MQ_PASSWORD
+        mq = storage.MessageQueue(conf)
+
     files = read_storage.list_dir()[:settings.MAX_FILES_BATCH]
     LOGGER.debug('Task - List directory successful')
     for file_name in files:
@@ -177,10 +187,15 @@ def process_files(source=settings.INGEST_SOURCE_PATH,
         try:
             contents = read_storage.read_file(file_name)
             write_storage.write_file(file_name, contents)
+            if settings.WRITE_MQ.capitalize() == "True" and not settings.WRITE_STORAGE_TYPE.endswith(('SftpStorage', 'FolderStorage')):
+                mq.publish_event(file_name)
             if copy_files.capitalize() == "False":
                 read_storage.delete_file(file_name)
             if not settings.WRITE_STORAGE_TYPE.endswith(('S3Storage', 'RedisStorage')):
-                write_storage.move_files()
+                if settings.WRITE_MQ.capitalize() == "True":
+                    write_storage.move_files(mq.publish_event)
+                else:
+                    write_storage.move_files()
 
         except Exception as err:
             LOGGER.exception('Task - Error with file read/write :' + repr(err))
