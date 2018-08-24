@@ -12,7 +12,6 @@ from datatransfer.storage import SftpStorage
 from datatransfer.storage import RedisStorage
 from datatransfer.tasks import process_files
 from datatransfer import utils
-# from redislite import Redis
 
 
 # Create your tests here.
