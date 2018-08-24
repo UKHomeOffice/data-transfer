@@ -162,7 +162,7 @@ Note: the read and write storage types need to be prefixed and options are:
 * datatransfer.storage.FolderStorage
 * datatransfer.storage.SftpStorage
 * datatransfer.storage.S3Storage
-* datatransfer.storage.RedisStorage  
+* datatransfer.storage.RedisStorage
 
 * Also ensure that the source and destination paths have the correct leading and
 trailing slashes, this will depend on the storage type and the OS. See the
@@ -245,6 +245,30 @@ configure the settings associated with the target storage type.
 |WRITE_REDIS_PASSWORD*       | pass                  | Password for redis      |
 +----------------------------+-----------------------+-------------------------+
 
+Message queue settings
+"""""""""""""""""""""""
+Provide connection settings for a message queue.
+Providing write settings will result in events being published in the format:
+{timestamp: timestamp, filename: filename}
+Currently only RabbitMQ is supported
+
++----------------------------+-----------------------+-------------------------+
+|Environment Variable        | Example               | Description             |
++============================+=======================+=========================+
+|WRITE_MQ                    | True                  | Enables writing to mq   |
++----------------------------+-----------------------+-------------------------+
+|WRITE_MQ_HOST               | localhost             | Message queue host      |
++----------------------------+-----------------------+-------------------------+
+|WRITE_MQ_PORT               | 5672                  | Message queue port      |
++----------------------------+-----------------------+-------------------------+
+|WRITE_MQ_PATH               | queue_name            | Queue to write to       |
++----------------------------+-----------------------+-------------------------+
+|WRITE_FTP_USERNAME          | user                  | Username for auth *     |
++----------------------------+-----------------------+-------------------------+
+|WRITE_FTP_PASSWORD          | password              | Password for auth       |
++----------------------------+-----------------------+-------------------------+
+
+* If required
 
 Running the application
 -----------------------
