@@ -44,6 +44,19 @@ READ_REDIS_HOST = os.environ.get('READ_REDIS_HOST', 'localhost')
 READ_REDIS_PORT = os.environ.get('READ_REDIS_PORT', '6379')
 READ_REDIS_PASSWORD = os.environ.get('READ_REDIS_PASSWORD', None)
 
+READ_MQ_HOST = os.environ.get('READ_MQ_HOST', 'localhost')
+READ_MQ_PORT = os.environ.get('READ_MQ_PORT', '5672')
+READ_MQ_PATH = os.environ.get('READ_MQ_PATH', 'a_path')
+READ_MQ_USERNAME = os.environ.get('READ_MQ_USERNAME', None)
+READ_MQ_PASSWORD = os.environ.get('READ_MQ_PASSWORD', None)
+
+WRITE_MQ_HOST = os.environ.get('WRITE_MQ_HOST', 'localhost')
+WRITE_MQ_PORT = os.environ.get('WRITE_MQ_PORT', '5672')
+WRITE_MQ_PATH = os.environ.get('WRITE_MQ_PATH', 'a_path')
+WRITE_MQ_USERNAME = os.environ.get('WRITE_MQ_USERNAME', None)
+WRITE_MQ_PASSWORD = os.environ.get('WRITE_MQ_PASSWORD', None)
+
+
 WRITE_REDIS_HOST = os.environ.get('WRITE_REDIS_HOST', 'localhost')
 WRITE_REDIS_PORT = os.environ.get('WRITE_REDIS_PORT', '6379')
 WRITE_REDIS_PASSWORD = os.environ.get('WRITE_REDIS_PASSWORD', None)
