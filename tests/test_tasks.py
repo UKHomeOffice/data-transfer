@@ -9,6 +9,7 @@ from datatransfer import settings
 from datatransfer.storage import FolderStorage
 from datatransfer.storage import S3Storage
 from datatransfer.storage import SftpStorage
+from datatransfer.storage import RedisStorage
 from datatransfer.tasks import process_files
 from datatransfer import utils
 

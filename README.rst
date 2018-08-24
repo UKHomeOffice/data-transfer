@@ -162,6 +162,7 @@ Note: the read and write storage types need to be prefixed and options are:
 * datatransfer.storage.FolderStorage
 * datatransfer.storage.SftpStorage
 * datatransfer.storage.S3Storage
+* datatransfer.storage.RedisStorage  
 
 * Also ensure that the source and destination paths have the correct leading and
 trailing slashes, this will depend on the storage type and the OS. See the
@@ -199,6 +200,14 @@ configure the settings associated with the source storage type.
 +----------------------------+------------------------+--------------------------+
 |READ_AWS_S3_REGION          | eu-west-1              | region for s3 bucket     |
 +----------------------------+------------------------+--------------------------+
+|READ_REDIS_HOST             | localhost              | Hostname or IP of redis  |
++----------------------------+------------------------+--------------------------+
+|READ_REDIS_PORT             | 6379                   | Port for redis           |
++----------------------------+------------------------+--------------------------+
+|READ_REDIS_PASSWORD*        | pass                   | Password for redis       |
++----------------------------+------------------------+--------------------------+
+
+* If redis password is required
 
 Target / write settings
 """""""""""""""""""""""
@@ -229,6 +238,13 @@ configure the settings associated with the target storage type.
 +----------------------------+-----------------------+-------------------------+
 |WRITE_AWS_S3_REGION         | eu-west-1             | region for s3 bucket    |
 +----------------------------+-----------------------+-------------------------+
+|WRITE_REDIS_HOST            | localhost             | Hostname or IP of redis |
++----------------------------+-----------------------+-------------------------+
+|WRITE_REDIS_PORT            | 6379                  | Port for redis          |
++----------------------------+-----------------------+-------------------------+
+|WRITE_REDIS_PASSWORD*       | pass                  | Password for redis      |
++----------------------------+-----------------------+-------------------------+
+
 
 Running the application
 -----------------------
