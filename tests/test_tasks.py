@@ -228,6 +228,26 @@ class TestStorage(unittest.TestCase):
         test_json = json.dumps({"timestamp": "2018-08-24T17:01:44.827543", "filename": "bbb"})
         self.assertEqual(test_json, utils.generate_event("bbb", datetime=mock_datetime))
 
+    def test_move_file_callback(self):
+        conf = {
+            'path': '/upload/tests/files/tmp',
+            'FTP_HOST': 'sftp_server',
+            'FTP_USER': 'foo',
+            'FTP_PASSWORD': 'pass',
+            'FTP_PORT': '2222'
+        }
+        self.setup()
+        storage = SftpStorage(conf)
+        for file_name in TEST_FILE_LIST:
+            with open('./tests/files/' + file_name, 'rb') as tmpfile:
+                data = tmpfile.read()
+                storage.write_file(file_name, data)
+        mock = MagicMock()
+        mock.test_func.return_value = True
+        storage.move_files(callback=mock.test_func)
+        mock.test_func.assert_called()
+        self.teardown()
+
     def teardown(self):
         """"Teardown: also tests the folder storage delete function"""
         if os.path.isdir('./tests/files/done'):
