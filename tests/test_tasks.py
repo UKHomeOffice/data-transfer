@@ -1,9 +1,11 @@
 """Test module"""
 import os
+import json
 from pathlib import Path
 import shutil
 import unittest
 from datetime import datetime, timedelta
+from unittest.mock import MagicMock
 
 from datatransfer import settings
 from datatransfer.storage import FolderStorage
@@ -217,6 +219,14 @@ class TestStorage(unittest.TestCase):
         dest = storage_dest.list_dir()
         self.assertEqual(source, dest)
         self.assertNotEqual(len(source), 0)
+
+    def test_generate_event(self):
+        mock_datetime = MagicMock()
+        now = MagicMock()
+        mock_datetime.now.return_value = now
+        now.isoformat.return_value = "2018-08-24T17:01:44.827543"
+        test_json = json.dumps({"timestamp": "2018-08-24T17:01:44.827543", "filename": "bbb"})
+        self.assertEqual(test_json, utils.generate_event("bbb", datetime=mock_datetime))
 
     def teardown(self):
         """"Teardown: also tests the folder storage delete function"""
