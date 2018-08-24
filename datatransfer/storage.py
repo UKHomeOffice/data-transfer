@@ -784,5 +784,10 @@ class MessageQueue:
 
     def channel(self):
         """Getter for _channel
+
+        Returns
+        -------
+        obj:
+            Pika connection channel object for queue interaction 
         """
         return self._channel
