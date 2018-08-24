@@ -7,3 +7,4 @@ boto3==1.4.8
 schedule==0.5.0
 paramiko==2.4.0
 redis==2.10.6
+pika==0.12.0

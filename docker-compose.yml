@@ -23,3 +23,17 @@ services:
     depends_on:
       - s3server
     command: --endpoint-url=http://s3server:8000 s3 mb s3://aws-ingest
+
+  rabbitmq:
+    image: rabbitmq:3
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
