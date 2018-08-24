@@ -117,7 +117,7 @@ class FolderStorage:
             LOGGER.exception('Folder - Unexpected error ' + repr(err))
             raise
 
-    def move_files(self):
+    def move_files(self, callback=None):
         """Moves content from the tmp location to the target directory.
 
         Parameters
@@ -140,6 +140,8 @@ class FolderStorage:
                 LOGGER.debug('Folder - Trying to move file : '
                              + os.path.join(self.path, filename) + ' to ' + dest)
                 shutil.move(os.path.join(source, filename), os.path.join(dest, filename))
+                if callback is not None:
+                    callback(filename)
 
             return True
         except OSError:
@@ -349,7 +351,7 @@ class SftpStorage:
             LOGGER.exception('sFTP - Unexpected error ' + repr(err))
             raise
 
-    def move_files(self):
+    def move_files(self, callback=None):
         """Moves content from the tmp location to the target directory.
 
         Parameters
@@ -375,6 +377,8 @@ class SftpStorage:
                              + ' Target filename ' + dest + '/' + filename)
                 self.sftp.posix_rename(source + '/' + filename, dest + '/'
                                        + filename)
+                if callback is not None:
+                    callback(filename)
 
             return True
         except OSError as err:
@@ -768,7 +772,7 @@ class MessageQueue:
     conf: dict of 'str' : 'str'
         Provides connection details for the message queue.
     """
-    def __init__(self, conf):
+    def __init__(self, conf, pika=pika):
         LOGGER.debug('MessageQueue - Creating MessageQueue instance')
         try:
             mq_credentials = pika.PlainCredentials(conf.get('username'), conf.get('password'))
@@ -788,6 +792,27 @@ class MessageQueue:
         Returns
         -------
         obj:
-            Pika connection channel object for queue interaction 
+            Pika connection channel object for queue interaction
         """
         return self._channel
+
+    def publish_event(self, file_name):
+        """Publishes event to message queue.
+        Parameters
+        ----------
+        event: str
+            An event to be put on a queue.
+
+        Returns
+        -------
+        bool
+            returns True if event successfully published
+        """
+        event = utils.generate_event(file_name)
+        try:
+            self.channel().basic_publish(exchange='',
+                                         routing_key='',
+                                         body=event)
+            return True
+        except Exception as err:
+            Logger.exception('MessageQueue - Unexpected error publishing event ' + repr(error))
