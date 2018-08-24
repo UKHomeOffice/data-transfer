@@ -73,13 +73,14 @@ The project's tests require the following dependencies:
 * An AWS S3 bucket or a mock
 * An FTP server
 * An SFTP server
+* A RabbitMQ server
 
 For local development and testing, we suggest running Docker images. The following
 will meet the test dependencies and match the default env vars::
 
-    docker run -d --name s3server -p 8000:8000 scality/s3server
-    docker run -d --name ftp_server -p 21:21 -p 30000-30009:30000-30009 onekilo79/ftpd_test
-    docker run -p 2222:22 -d atmoz/sftp foo:pass:::upload
+```
+docker-compose up -d
+```
 
 Test
 """"
@@ -87,7 +88,7 @@ Test
 Once the application is installed and the dependencies are in place, run the
 tests::
 
-    pytest tests
+    drone exec --local
 
 
 Building & publishing
