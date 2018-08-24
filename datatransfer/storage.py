@@ -786,15 +786,3 @@ class MessageQueue:
         """Getter for _channel
         """
         return self._channel
-
-    def publish_event(self, event):
-        """
-        Publish event to queue
-        """
-        pass
-
-    def consume(self, callback):
-        """
-        Consume queue and apply callback to events
-        """
-        pass
