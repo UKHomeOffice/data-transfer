@@ -10,10 +10,10 @@ import tempfile
 import boto3
 import botocore
 import paramiko
+import redis
+import pika
 from datatransfer import settings
 from datatransfer import utils
-import redis
-# from redislite import Redis
 
 LOGGER = logging.getLogger(__name__)
 
@@ -759,7 +759,7 @@ class RedisStorage:
 
 
 class MessageQueue:
-    """Abstraction for MQ interaction. 
+    """Abstraction for MQ interaction.
     MessageQueue will allow for the publishing and consumption of event from a queue.
     Currently MessageQueue only supports RabbitMQ
 
@@ -769,22 +769,23 @@ class MessageQueue:
         Provides connection details for the message queue.
     """
     def __init__(self, conf):
-        """
-        conf: host, port, queue_name
-        """
         LOGGER.debug('MessageQueue - Creating MessageQueue instance')
         try:
-            credentials = pika.PlainCredentials('user', 'pass')
-            connection = pika.BlockingConnection(pika.ConnectionParameters(host=conf.get('host'), 
-                                                                           port=int(conf.get('port')
-                                                                           credentials=credentials))
-            self.channel = connection.channel()
+            mq_credentials = pika.PlainCredentials(conf.get('username'), conf.get('password'))
+            connection = pika.BlockingConnection(pika.ConnectionParameters(host=conf.get('host'),
+                                                                           port=int(conf.get('port')),
+                                                                           credentials=mq_credentials))
+            self._channel = connection.channel()
             LOGGER.debug('MessageQueue - Connection established')
-            channel.queue_declare(queue=conf.get('queue_name'))
-	except Exception as err:
-	    LOGGER.exception('MessageQueue - Unexpected error ' + repr(err))
-	    raise
-	    	
+            self._channel.queue_declare(queue=conf.get('queue_name'))
+        except Exception as err:
+            LOGGER.exception('MessageQueue - Unexpected error ' + repr(err))
+            raise
+
+    def channel(self):
+        """Getter for _channel
+        """
+        return self._channel
 
     def publish_event(self, event):
         """
@@ -797,5 +798,3 @@ class MessageQueue:
         Consume queue and apply callback to events
         """
         pass
-
-
