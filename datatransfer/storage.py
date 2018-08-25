@@ -775,10 +775,14 @@ class MessageQueue:
     def __init__(self, conf, pika=pika):
         LOGGER.debug('MessageQueue - Creating MessageQueue instance')
         try:
-            mq_credentials = pika.PlainCredentials(conf.get('username'), conf.get('password'))
-            connection = pika.BlockingConnection(pika.ConnectionParameters(host=conf.get('host'),
-                                                                           port=int(conf.get('port')),
-                                                                           credentials=mq_credentials))
+            if conf.get('username') is not None:
+                mq_credentials = pika.PlainCredentials(conf.get('username'), conf.get('password'))
+                connection = pika.BlockingConnection(pika.ConnectionParameters(host=conf.get('host'),
+                                                                               port=int(conf.get('port')),
+                                                                               credentials=mq_credentials))
+            else:
+                connection = pika.BlockingConnection(pika.ConnectionParameters(host=conf.get('host'),
+                                                                               port=int(conf.get('port'))))
             self._channel = connection.channel()
             LOGGER.debug('MessageQueue - Connection established')
             self._channel.queue_declare(queue=conf.get('queue_name'))
