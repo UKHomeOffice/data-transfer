@@ -120,6 +120,51 @@ def storage_type(path, read_write):
             LOGGER.info('Task - Settings write storage to Redis')
         return WRITESTORAGETYPE(conf)
 
+def build_dest_str(dest):
+    """Builds destination string with appropriate seperator and
+    tmp location, based on the storage type.
+
+    Parameters
+    ----------
+    dest: str
+        The ingest destination path
+    """
+    if os.name == 'nt' and settings.WRITE_STORAGE_TYPE.endswith('FolderStorage'):
+        LOGGER.debug('Main - OS Identified as Windows for WriteStorage')
+        sep = os.sep
+    else:
+        sep = '/'
+
+    if settings.FOLDER_DATE_OUTPUT == 'True':
+        LOGGER.debug('Task - Folder date output set to ' + settings.FOLDER_DATE_OUTPUT)
+        if dest.endswith(sep):
+            dest = dest + utils.get_date_based_folder()
+        else:
+            dest = dest + sep + utils.get_date_based_folder()
+
+    if dest.endswith(sep):
+        dest = dest + settings.TMP_FOLDER_NAME
+    elif not settings.WRITE_STORAGE_TYPE.endswith('RedisStorage'):
+        dest = dest + sep + settings.TMP_FOLDER_NAME
+    return dest
+
+def create_mq():
+    """Uses relevant conf settings to construct a MessageQueue
+    object.
+
+    Returns
+    -------
+    obj:
+        MessageQueue object.
+    """
+    conf = {'host': settings.WRITE_MQ_HOST,
+            'port': settings.WRITE_MQ_PORT,
+            'queue_name': settings.WRITE_MQ_PATH}
+    if settings.WRITE_MQ_USERNAME is not None:
+        conf["username"] = settings.WRITE_MQ_USERNAME
+        conf["password"] = settings.WRITE_MQ_PASSWORD
+    return storage.MessageQueue(conf)
+
 def process_files(source=settings.INGEST_SOURCE_PATH,
                   dest=settings.INGEST_DEST_PATH,
                   copy_files=settings.COPY_FILES):
@@ -144,24 +189,7 @@ def process_files(source=settings.INGEST_SOURCE_PATH,
     LOGGER.debug('Main - Read path var : ' + source)
     LOGGER.debug('Main - Write path var : ' + dest)
     try:
-        if os.name == 'nt' and settings.WRITE_STORAGE_TYPE.endswith('FolderStorage'):
-            LOGGER.debug('Main - OS Identified as Windows for WriteStorage')
-            sep = os.sep
-        else:
-            sep = '/'
-
-        if settings.FOLDER_DATE_OUTPUT == 'True':
-            LOGGER.debug('Task - Folder date output set to ' + settings.FOLDER_DATE_OUTPUT)
-            if dest.endswith(sep):
-                dest = dest + utils.get_date_based_folder()
-            else:
-                dest = dest + sep + utils.get_date_based_folder()
-
-        if dest.endswith(sep):
-            dest = dest + settings.TMP_FOLDER_NAME
-        elif not settings.WRITE_STORAGE_TYPE.endswith('RedisStorage'):
-            dest = dest + sep + settings.TMP_FOLDER_NAME
-
+        dest = build_dest_str(dest)
         read_storage = storage_type(source, 'r')
         write_storage = storage_type(dest, 'w')
     except Exception as err:
@@ -170,13 +198,7 @@ def process_files(source=settings.INGEST_SOURCE_PATH,
 
     if settings.WRITE_MQ.capitalize() == "True":
         LOGGER.info('Main - Publish to MessageQueue: True')
-        conf = {'host': settings.WRITE_MQ_HOST,
-                'port': settings.WRITE_MQ_PORT,
-                'queue_name': settings.WRITE_MQ_PATH}
-        if settings.WRITE_MQ_USERNAME is not None:
-            conf["username"] = settings.WRITE_MQ_USERNAME
-            conf["password"] = settings.WRITE_MQ_PASSWORD
-        mq = storage.MessageQueue(conf)
+        mq = create_mq()
 
     files = read_storage.list_dir()[:settings.MAX_FILES_BATCH]
     LOGGER.debug('Task - List directory successful')
@@ -194,6 +216,7 @@ def process_files(source=settings.INGEST_SOURCE_PATH,
             if not settings.WRITE_STORAGE_TYPE.endswith(('S3Storage', 'RedisStorage')):
                 if settings.WRITE_MQ.capitalize() == "True":
                     write_storage.move_files(mq.publish_event)
+                    print("Wrote to q")
                 else:
                     write_storage.move_files()
 
