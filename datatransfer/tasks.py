@@ -172,29 +172,26 @@ def process_files(source=settings.INGEST_SOURCE_PATH,
     if settings.WRITE_MQ.capitalize() == "True":
         LOGGER.info('Main - Publish to MessageQueue: True')
         mq = create_mq()
-
-    files = read_storage.list_dir()[:settings.MAX_FILES_BATCH]
-    LOGGER.debug('Task - List directory successful')
-    for file_name in files:
-        LOGGER.debug('PROCESS FILE ' + repr(file_name))
-        if file_name == '':
-            continue
-        try:
-            contents = read_storage.read_file(file_name)
-            write_storage.write_file(file_name, contents)
-            if settings.WRITE_MQ.capitalize() == "True" and not settings.WRITE_STORAGE_TYPE.endswith(('SftpStorage', 'FolderStorage')):
-                mq.publish_event(file_name)
-            if copy_files.capitalize() == "False":
-                read_storage.delete_file(file_name)
-            if not settings.WRITE_STORAGE_TYPE.endswith(('S3Storage', 'RedisStorage')):
-                if settings.WRITE_MQ.capitalize() == "True":
-                    write_storage.move_files(mq.publish_event)
-                else:
+        for file_name in read_storage.list_dir():
+            mq.publish_event(file_name)
+    else:
+        files = read_storage.list_dir()[:settings.MAX_FILES_BATCH]
+        LOGGER.debug('Task - List directory successful')
+        for file_name in files:
+            LOGGER.debug('PROCESS FILE ' + repr(file_name))
+            if file_name == '':
+                continue
+            try:
+                contents = read_storage.read_file(file_name)
+                write_storage.write_file(file_name, contents)
+                if copy_files.capitalize() == "False":
+                    read_storage.delete_file(file_name)
+                if not settings.WRITE_STORAGE_TYPE.endswith(('S3Storage', 'RedisStorage')):
                     write_storage.move_files()
 
-        except Exception as err:
-            LOGGER.exception('Task - Error with file read/write :' + repr(err))
-            raise
+            except Exception as err:
+                LOGGER.exception('Task - Error with file read/write :' + repr(err))
+                raise
 
     read_storage.exit()
     write_storage.exit()
