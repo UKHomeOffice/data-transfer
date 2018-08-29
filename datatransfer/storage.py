@@ -17,6 +17,34 @@ from datatransfer import utils
 
 LOGGER = logging.getLogger(__name__)
 
+def build_dest_str(dest):
+    """Builds destination string with appropriate seperator and
+    tmp location, based on the storage type.
+
+    Parameters
+    ----------
+    dest: str
+        The ingest destination path
+    """
+    if os.name == 'nt' and settings.WRITE_STORAGE_TYPE.endswith('FolderStorage'):
+        LOGGER.debug('Main - OS Identified as Windows for WriteStorage')
+        sep = os.sep
+    else:
+        sep = '/'
+
+    if settings.FOLDER_DATE_OUTPUT == 'True':
+        LOGGER.debug('Task - Folder date output set to ' + settings.FOLDER_DATE_OUTPUT)
+        if dest.endswith(sep):
+            dest = dest + utils.get_date_based_folder()
+        else:
+            dest = dest + sep + utils.get_date_based_folder()
+
+    if dest.endswith(sep):
+        dest = dest + settings.TMP_FOLDER_NAME
+    elif not settings.WRITE_STORAGE_TYPE.endswith('RedisStorage'):
+        dest = dest + sep + settings.TMP_FOLDER_NAME
+    return dest
+
 class FolderStorage:
     """Abstraction for using a local directory for storage.
 
@@ -784,8 +812,10 @@ class MessageQueue:
                 connection = pika.BlockingConnection(pika.ConnectionParameters(host=conf.get('host'),
                                                                                port=int(conf.get('port'))))
             self._channel = connection.channel()
+            self._channel.confirm_delivery()
             LOGGER.debug('MessageQueue - Connection established')
-            self._channel.queue_declare(queue=conf.get('queue_name'))
+            self.queue_name = conf.get('queue_name')
+            self._channel.queue_declare(queue=conf.get('queue_name'), durable=True)
         except Exception as err:
             LOGGER.exception('MessageQueue - Unexpected error ' + repr(err))
             raise
@@ -802,6 +832,7 @@ class MessageQueue:
 
     def publish_event(self, file_name):
         """Publishes event to message queue.
+        Message delivery to the broker is confirmed or delivery is re-attempted
         Parameters
         ----------
         event: str
@@ -813,10 +844,16 @@ class MessageQueue:
             returns True if event successfully published
         """
         event = utils.generate_event(file_name)
+        msg_properties = pika.BasicProperties(delivery_mode=2)
         try:
-            self.channel().basic_publish(exchange='',
-                                         routing_key='',
-                                         body=event)
-            return True
+            if not self.channel().basic_publish(exchange='',
+                                                routing_key=self.queue_name,
+                                                body=event,
+                                                properties=msg_properties):
+                # nack received, retry,
+                LOGGER.warning('MessageQueue - Failed to send message to broker')
+                return self.publish_event(file_name)
+            else:
+                return True
         except Exception as err:
-            Logger.exception('MessageQueue - Unexpected error publishing event ' + repr(error))
+            LOGGER.exception('MessageQueue - Unexpected error publishing event ' + repr(error))
