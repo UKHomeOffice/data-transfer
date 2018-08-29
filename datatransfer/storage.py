@@ -17,33 +17,6 @@ from datatransfer import utils
 
 LOGGER = logging.getLogger(__name__)
 
-def build_dest_str(dest):
-    """Builds destination string with appropriate seperator and
-    tmp location, based on the storage type.
-
-    Parameters
-    ----------
-    dest: str
-        The ingest destination path
-    """
-    if os.name == 'nt' and settings.WRITE_STORAGE_TYPE.endswith('FolderStorage'):
-        LOGGER.debug('Main - OS Identified as Windows for WriteStorage')
-        sep = os.sep
-    else:
-        sep = '/'
-
-    if settings.FOLDER_DATE_OUTPUT == 'True':
-        LOGGER.debug('Task - Folder date output set to ' + settings.FOLDER_DATE_OUTPUT)
-        if dest.endswith(sep):
-            dest = dest + utils.get_date_based_folder()
-        else:
-            dest = dest + sep + utils.get_date_based_folder()
-
-    if dest.endswith(sep):
-        dest = dest + settings.TMP_FOLDER_NAME
-    elif not settings.WRITE_STORAGE_TYPE.endswith('RedisStorage'):
-        dest = dest + sep + settings.TMP_FOLDER_NAME
-    return dest
 
 class FolderStorage:
     """Abstraction for using a local directory for storage.
@@ -802,6 +775,7 @@ class MessageQueue:
     """
     def __init__(self, conf, pika=pika):
         LOGGER.debug('MessageQueue - Creating MessageQueue instance')
+        self.MAX_RETRIES = 10
         try:
             if conf.get('username') is not None:
                 mq_credentials = pika.PlainCredentials(conf.get('username'), conf.get('password'))
@@ -835,8 +809,8 @@ class MessageQueue:
         Message delivery to the broker is confirmed or delivery is re-attempted
         Parameters
         ----------
-        event: str
-            An event to be put on a queue.
+        file_name: str
+            A filename to be added to a queue.
 
         Returns
         -------
@@ -845,15 +819,36 @@ class MessageQueue:
         """
         event = utils.generate_event(file_name)
         msg_properties = pika.BasicProperties(delivery_mode=2)
+        nack_counter = 0
         try:
-            if not self.channel().basic_publish(exchange='',
-                                                routing_key=self.queue_name,
-                                                body=event,
-                                                properties=msg_properties):
+            while not self.channel().basic_publish(exchange='',
+                                                   routing_key=self.queue_name,
+                                                   body=event,
+                                                   properties=msg_properties):
                 # nack received, retry,
-                LOGGER.warning('MessageQueue - Failed to send message to broker')
-                return self.publish_event(file_name)
-            else:
-                return True
+                if nack_counter >= self.MAX_RETRIES:
+                    raise RuntimeError('Reached max retry count for event publication')
+                else:
+                    LOGGER.warning('MessageQueue - Failed to send message to broker')
+                    nack_counter += 1
+            return True
         except Exception as err:
-            LOGGER.exception('MessageQueue - Unexpected error publishing event ' + repr(error))
+            LOGGER.exception('MessageQueue - Unexpected error publishing event ' + repr(err))
+            raise
+
+def create_mq():
+    """Uses relevant conf settings to construct a MessageQueue
+    object.
+
+    Returns
+    -------
+    obj:
+        MessageQueue object.
+    """
+    conf = {'host': settings.WRITE_MQ_HOST,
+            'port': settings.WRITE_MQ_PORT,
+            'queue_name': settings.WRITE_MQ_PATH}
+    if settings.WRITE_MQ_USERNAME is not None:
+        conf["username"] = settings.WRITE_MQ_USERNAME
+        conf["password"] = settings.WRITE_MQ_PASSWORD
+    return MessageQueue(conf)
