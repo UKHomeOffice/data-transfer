@@ -157,6 +157,8 @@ the default value is used:
 +---------------------+----------------------+-----------+-----------------------------------+
 |COPY_FILES           | False                | No        | Do not delete from source if true |
 +---------------------+----------------------+-----------+-----------------------------------+
+|MAX_RETRIES          | 10                   | No        | Reattempt message delivery x times|
++---------------------+----------------------+-----------+-----------------------------------+
 
 Note: the read and write storage types need to be prefixed and options are:
 

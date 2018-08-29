@@ -8,6 +8,7 @@ class TestMessageQueue(unittest.TestCase):
                      'password': 'password',
                      'host': 'rabbitmq',
                      'port': '5672',
+                     'max_retries': 10,
                      'queue_name': 'a_test_queue'}
         self.pika = MagicMock()
         self.pika.PlainCredentials.return_value = True

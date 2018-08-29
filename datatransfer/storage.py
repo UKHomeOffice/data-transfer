@@ -775,12 +775,12 @@ class MessageQueue:
     """
     def __init__(self, conf, pika=pika):
         LOGGER.debug('MessageQueue - Creating MessageQueue instance')
-        self.MAX_RETRIES = 10
+        self.MAX_RETRIES = conf.get('max_retries')
         try:
             if conf.get('username') is not None:
                 mq_credentials = pika.PlainCredentials(conf.get('username'), conf.get('password'))
                 connection = pika.BlockingConnection(pika.ConnectionParameters(host=conf.get('host'),
-                                                                               port=int(conf.get('port')),
+                                                                               port=conf.get('port'),
                                                                                credentials=mq_credentials))
             else:
                 connection = pika.BlockingConnection(pika.ConnectionParameters(host=conf.get('host'),
@@ -846,8 +846,9 @@ def create_mq():
         MessageQueue object.
     """
     conf = {'host': settings.WRITE_MQ_HOST,
-            'port': settings.WRITE_MQ_PORT,
-            'queue_name': settings.WRITE_MQ_PATH}
+            'port': int(settings.WRITE_MQ_PORT),
+            'queue_name': settings.WRITE_MQ_PATH,
+            'max_retries': int(settings.MAX_RETRIES)}
     if settings.WRITE_MQ_USERNAME is not None:
         conf["username"] = settings.WRITE_MQ_USERNAME
         conf["password"] = settings.WRITE_MQ_PASSWORD
