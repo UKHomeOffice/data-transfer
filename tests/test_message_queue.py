@@ -1,5 +1,5 @@
 import unittest
-from datatransfer.storage import MessageQueue
+from datatransfer.storage import MessageQueue, create_mq
 from unittest.mock import MagicMock
 
 class TestMessageQueue(unittest.TestCase):
@@ -35,6 +35,18 @@ class TestMessageQueue(unittest.TestCase):
         mq = MessageQueue(self.conf, pika=self.pika)
         self.assertTrue(mq.publish_event('an_event'))
         self.channel.basic_publish.assert_called()
+
+    def test_event_publish_nack(self):
+        self.setup()
+        self.channel.basic_publish.return_value = False
+        mq = MessageQueue(self.conf, pika=self.pika)
+        with self.assertRaises(RuntimeError):
+            mq.publish_event('an_event')
+
+    def test_create_mq(self):
+        mq = create_mq()
+        self.assertIsNotNone(mq.channel())
+
 
 if __name__ == "__main__":
     unittest.main()

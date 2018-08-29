@@ -12,7 +12,7 @@ from datatransfer.storage import FolderStorage
 from datatransfer.storage import S3Storage
 from datatransfer.storage import SftpStorage
 from datatransfer.storage import RedisStorage
-from datatransfer.tasks import process_files, create_mq
+from datatransfer.tasks import process_files
 from datatransfer import utils
 
 
@@ -247,10 +247,6 @@ class TestStorage(unittest.TestCase):
         storage.move_files(callback=mock.test_func)
         mock.test_func.assert_called()
         self.teardown()
-
-    def test_create_mq(self):
-        mq = create_mq()
-        self.assertIsNotNone(mq.channel())
 
     def teardown(self):
         """"Teardown: also tests the folder storage delete function"""
