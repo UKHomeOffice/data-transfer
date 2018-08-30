@@ -17,6 +17,7 @@ from datatransfer import utils
 
 LOGGER = logging.getLogger(__name__)
 
+
 class FolderStorage:
     """Abstraction for using a local directory for storage.
 
@@ -117,7 +118,7 @@ class FolderStorage:
             LOGGER.exception('Folder - Unexpected error ' + repr(err))
             raise
 
-    def move_files(self):
+    def move_files(self, callback=None):
         """Moves content from the tmp location to the target directory.
 
         Parameters
@@ -140,6 +141,8 @@ class FolderStorage:
                 LOGGER.debug('Folder - Trying to move file : '
                              + os.path.join(self.path, filename) + ' to ' + dest)
                 shutil.move(os.path.join(source, filename), os.path.join(dest, filename))
+                if callback is not None:
+                    callback(filename)
 
             return True
         except OSError:
@@ -349,7 +352,7 @@ class SftpStorage:
             LOGGER.exception('sFTP - Unexpected error ' + repr(err))
             raise
 
-    def move_files(self):
+    def move_files(self, callback=None):
         """Moves content from the tmp location to the target directory.
 
         Parameters
@@ -375,6 +378,8 @@ class SftpStorage:
                              + ' Target filename ' + dest + '/' + filename)
                 self.sftp.posix_rename(source + '/' + filename, dest + '/'
                                        + filename)
+                if callback is not None:
+                    callback(filename)
 
             return True
         except OSError as err:
@@ -768,16 +773,23 @@ class MessageQueue:
     conf: dict of 'str' : 'str'
         Provides connection details for the message queue.
     """
-    def __init__(self, conf):
+    def __init__(self, conf, pika=pika):
         LOGGER.debug('MessageQueue - Creating MessageQueue instance')
+        self.MAX_RETRIES = conf.get('max_retries')
         try:
-            mq_credentials = pika.PlainCredentials(conf.get('username'), conf.get('password'))
-            connection = pika.BlockingConnection(pika.ConnectionParameters(host=conf.get('host'),
-                                                                           port=int(conf.get('port')),
-                                                                           credentials=mq_credentials))
+            if conf.get('username') is not None:
+                mq_credentials = pika.PlainCredentials(conf.get('username'), conf.get('password'))
+                connection = pika.BlockingConnection(pika.ConnectionParameters(host=conf.get('host'),
+                                                                               port=conf.get('port'),
+                                                                               credentials=mq_credentials))
+            else:
+                connection = pika.BlockingConnection(pika.ConnectionParameters(host=conf.get('host'),
+                                                                               port=int(conf.get('port'))))
             self._channel = connection.channel()
+            self._channel.confirm_delivery()
             LOGGER.debug('MessageQueue - Connection established')
-            self._channel.queue_declare(queue=conf.get('queue_name'))
+            self.queue_name = conf.get('queue_name')
+            self._channel.queue_declare(queue=conf.get('queue_name'), durable=True)
         except Exception as err:
             LOGGER.exception('MessageQueue - Unexpected error ' + repr(err))
             raise
@@ -788,6 +800,56 @@ class MessageQueue:
         Returns
         -------
         obj:
-            Pika connection channel object for queue interaction 
+            Pika connection channel object for queue interaction
         """
         return self._channel
+
+    def publish_event(self, file_name):
+        """Publishes event to message queue.
+        Message delivery to the broker is confirmed or delivery is re-attempted
+        Parameters
+        ----------
+        file_name: str
+            A filename to be added to a queue.
+
+        Returns
+        -------
+        bool
+            returns True if event successfully published
+        """
+        event = utils.generate_event(file_name)
+        msg_properties = pika.BasicProperties(delivery_mode=2)
+        nack_counter = 0
+        try:
+            while not self.channel().basic_publish(exchange='',
+                                                   routing_key=self.queue_name,
+                                                   body=event,
+                                                   properties=msg_properties):
+                # nack received, retry,
+                if nack_counter >= self.MAX_RETRIES:
+                    raise RuntimeError('Reached max retry count for event publication')
+                else:
+                    LOGGER.warning('MessageQueue - Failed to send message to broker')
+                    nack_counter += 1
+            return True
+        except Exception as err:
+            LOGGER.exception('MessageQueue - Unexpected error publishing event ' + repr(err))
+            raise
+
+def create_mq():
+    """Uses relevant conf settings to construct a MessageQueue
+    object.
+
+    Returns
+    -------
+    obj:
+        MessageQueue object.
+    """
+    conf = {'host': settings.WRITE_MQ_HOST,
+            'port': int(settings.WRITE_MQ_PORT),
+            'queue_name': settings.WRITE_MQ_PATH,
+            'max_retries': int(settings.MAX_RETRIES)}
+    if settings.WRITE_MQ_USERNAME is not None:
+        conf["username"] = settings.WRITE_MQ_USERNAME
+        conf["password"] = settings.WRITE_MQ_PASSWORD
+    return MessageQueue(conf)

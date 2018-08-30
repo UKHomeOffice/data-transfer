@@ -1,5 +1,6 @@
 """Utility module"""
 from datetime import datetime
+import json
 
 def my_import(name):
     """Function converts a string based import into a module object, used for
@@ -44,6 +45,12 @@ def check_new_day(folder_date):
     """Function that checks what the current date is and determines if a new
     folder is required to be made"""
     return datetime.utcnow().date() != folder_date
+
+def generate_event(file_name, datetime=datetime):
+    """Function to generate json with a timestamp and filname headers.
+    """
+    return json.dumps({'timestamp': datetime.now().isoformat(),
+                'filename': file_name})
 
 def chop_end_of_string(str_input, str_remove):
     """Function that strips the supplied str_remove from the end of the input

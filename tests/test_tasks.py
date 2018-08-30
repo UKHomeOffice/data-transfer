@@ -1,9 +1,11 @@
 """Test module"""
 import os
+import json
 from pathlib import Path
 import shutil
 import unittest
 from datetime import datetime, timedelta
+from unittest.mock import MagicMock
 
 from datatransfer import settings
 from datatransfer.storage import FolderStorage
@@ -217,6 +219,34 @@ class TestStorage(unittest.TestCase):
         dest = storage_dest.list_dir()
         self.assertEqual(source, dest)
         self.assertNotEqual(len(source), 0)
+
+    def test_generate_event(self):
+        mock_datetime = MagicMock()
+        now = MagicMock()
+        mock_datetime.now.return_value = now
+        now.isoformat.return_value = "2018-08-24T17:01:44.827543"
+        test_json = json.dumps({"timestamp": "2018-08-24T17:01:44.827543", "filename": "bbb"})
+        self.assertEqual(test_json, utils.generate_event("bbb", datetime=mock_datetime))
+
+    def test_move_file_callback(self):
+        conf = {
+            'path': '/upload/tests/files/tmp',
+            'FTP_HOST': 'sftp_server',
+            'FTP_USER': 'foo',
+            'FTP_PASSWORD': 'pass',
+            'FTP_PORT': '2222'
+        }
+        self.setup()
+        storage = SftpStorage(conf)
+        for file_name in TEST_FILE_LIST:
+            with open('./tests/files/' + file_name, 'rb') as tmpfile:
+                data = tmpfile.read()
+                storage.write_file(file_name, data)
+        mock = MagicMock()
+        mock.test_func.return_value = True
+        storage.move_files(callback=mock.test_func)
+        mock.test_func.assert_called()
+        self.teardown()
 
     def teardown(self):
         """"Teardown: also tests the folder storage delete function"""

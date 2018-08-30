@@ -44,13 +44,15 @@ READ_REDIS_HOST = os.environ.get('READ_REDIS_HOST', 'localhost')
 READ_REDIS_PORT = os.environ.get('READ_REDIS_PORT', '6379')
 READ_REDIS_PASSWORD = os.environ.get('READ_REDIS_PASSWORD', None)
 
+READ_MQ = os.environ.get('READ_MQ', "False")
 READ_MQ_HOST = os.environ.get('READ_MQ_HOST', 'localhost')
 READ_MQ_PORT = os.environ.get('READ_MQ_PORT', '5672')
 READ_MQ_PATH = os.environ.get('READ_MQ_PATH', 'a_path')
 READ_MQ_USERNAME = os.environ.get('READ_MQ_USERNAME', None)
 READ_MQ_PASSWORD = os.environ.get('READ_MQ_PASSWORD', None)
 
-WRITE_MQ_HOST = os.environ.get('WRITE_MQ_HOST', 'localhost')
+WRITE_MQ = os.environ.get('WRITE_MQ', "False")
+WRITE_MQ_HOST = os.environ.get('WRITE_MQ_HOST', 'rabbitmq')
 WRITE_MQ_PORT = os.environ.get('WRITE_MQ_PORT', '5672')
 WRITE_MQ_PATH = os.environ.get('WRITE_MQ_PATH', 'a_path')
 WRITE_MQ_USERNAME = os.environ.get('WRITE_MQ_USERNAME', None)
@@ -70,6 +72,7 @@ LOG_FILE_NAME = os.environ.get('LOG_FILE_NAME', 'data-transfer-app.log')
 USE_IAM_CREDS = os.environ.get('USE_IAM_CREDS', 'False')
 TMP_FOLDER_NAME = os.environ.get('TEMP_FOLDER_NAME', 'tmp')
 COPY_FILES = os.environ.get('COPY_FILES', 'False')
+MAX_RETRIES = os.environ.get('MAX_RETRIES', '10')
 
 #  Loggin config
 DICTLOGCONFIG = {

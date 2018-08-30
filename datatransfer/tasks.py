@@ -120,6 +120,35 @@ def storage_type(path, read_write):
             LOGGER.info('Task - Settings write storage to Redis')
         return WRITESTORAGETYPE(conf)
 
+def build_dest_str(dest):
+    """Builds destination string with appropriate seperator and
+    tmp location, based on the storage type.
+
+    Parameters
+    ----------
+    dest: str
+        The ingest destination path
+    """
+    if os.name == 'nt' and settings.WRITE_STORAGE_TYPE.endswith('FolderStorage'):
+        LOGGER.debug('Main - OS Identified as Windows for WriteStorage')
+        sep = os.sep
+    else:
+        sep = '/'
+
+    if settings.FOLDER_DATE_OUTPUT == 'True':
+        LOGGER.debug('Task - Folder date output set to ' + settings.FOLDER_DATE_OUTPUT)
+        if dest.endswith(sep):
+            dest = dest + utils.get_date_based_folder()
+        else:
+            dest = dest + sep + utils.get_date_based_folder()
+
+    if dest.endswith(sep):
+        dest = dest + settings.TMP_FOLDER_NAME
+    elif not settings.WRITE_STORAGE_TYPE.endswith('RedisStorage'):
+        dest = dest + sep + settings.TMP_FOLDER_NAME
+    return dest
+
+
 def process_files(source=settings.INGEST_SOURCE_PATH,
                   dest=settings.INGEST_DEST_PATH,
                   copy_files=settings.COPY_FILES):
@@ -144,47 +173,36 @@ def process_files(source=settings.INGEST_SOURCE_PATH,
     LOGGER.debug('Main - Read path var : ' + source)
     LOGGER.debug('Main - Write path var : ' + dest)
     try:
-        if os.name == 'nt' and settings.WRITE_STORAGE_TYPE.endswith('FolderStorage'):
-            LOGGER.debug('Main - OS Identified as Windows for WriteStorage')
-            sep = os.sep
-        else:
-            sep = '/'
-
-        if settings.FOLDER_DATE_OUTPUT == 'True':
-            LOGGER.debug('Task - Folder date output set to ' + settings.FOLDER_DATE_OUTPUT)
-            if dest.endswith(sep):
-                dest = dest + utils.get_date_based_folder()
-            else:
-                dest = dest + sep + utils.get_date_based_folder()
-
-        if dest.endswith(sep):
-            dest = dest + settings.TMP_FOLDER_NAME
-        elif not settings.WRITE_STORAGE_TYPE.endswith('RedisStorage'):
-            dest = dest + sep + settings.TMP_FOLDER_NAME
-
+        dest = build_dest_str(dest)
         read_storage = storage_type(source, 'r')
         write_storage = storage_type(dest, 'w')
     except Exception as err:
         LOGGER.exception('Main - Error with storage ' + repr(err))
         raise
 
-    files = read_storage.list_dir()[:settings.MAX_FILES_BATCH]
-    LOGGER.debug('Task - List directory successful')
-    for file_name in files:
-        LOGGER.debug('PROCESS FILE ' + repr(file_name))
-        if file_name == '':
-            continue
-        try:
-            contents = read_storage.read_file(file_name)
-            write_storage.write_file(file_name, contents)
-            if copy_files.capitalize() == "False":
-                read_storage.delete_file(file_name)
-            if not settings.WRITE_STORAGE_TYPE.endswith(('S3Storage', 'RedisStorage')):
-                write_storage.move_files()
+    if settings.WRITE_MQ.capitalize() == "True":
+        LOGGER.info('Main - Publish to MessageQueue: True')
+        mq = storage.create_mq()
+        for file_name in read_storage.list_dir():
+            mq.publish_event(file_name)
+    else:
+        files = read_storage.list_dir()[:settings.MAX_FILES_BATCH]
+        LOGGER.debug('Task - List directory successful')
+        for file_name in files:
+            LOGGER.debug('PROCESS FILE ' + repr(file_name))
+            if file_name == '':
+                continue
+            try:
+                contents = read_storage.read_file(file_name)
+                write_storage.write_file(file_name, contents)
+                if copy_files.capitalize() == "False":
+                    read_storage.delete_file(file_name)
+                if not settings.WRITE_STORAGE_TYPE.endswith(('S3Storage', 'RedisStorage')):
+                    write_storage.move_files()
 
-        except Exception as err:
-            LOGGER.exception('Task - Error with file read/write :' + repr(err))
-            raise
+            except Exception as err:
+                LOGGER.exception('Task - Error with file read/write :' + repr(err))
+                raise
 
     read_storage.exit()
     write_storage.exit()

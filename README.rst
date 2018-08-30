@@ -73,13 +73,14 @@ The project's tests require the following dependencies:
 * An AWS S3 bucket or a mock
 * An FTP server
 * An SFTP server
+* A RabbitMQ server
 
 For local development and testing, we suggest running Docker images. The following
 will meet the test dependencies and match the default env vars::
 
-    docker run -d --name s3server -p 8000:8000 scality/s3server
-    docker run -d --name ftp_server -p 21:21 -p 30000-30009:30000-30009 onekilo79/ftpd_test
-    docker run -p 2222:22 -d atmoz/sftp foo:pass:::upload
+```
+docker-compose up -d
+```
 
 Test
 """"
@@ -87,7 +88,7 @@ Test
 Once the application is installed and the dependencies are in place, run the
 tests::
 
-    pytest tests
+    drone exec --local
 
 
 Building & publishing
@@ -156,13 +157,15 @@ the default value is used:
 +---------------------+----------------------+-----------+-----------------------------------+
 |COPY_FILES           | False                | No        | Do not delete from source if true |
 +---------------------+----------------------+-----------+-----------------------------------+
+|MAX_RETRIES          | 10                   | No        | Reattempt message delivery x times|
++---------------------+----------------------+-----------+-----------------------------------+
 
 Note: the read and write storage types need to be prefixed and options are:
 
 * datatransfer.storage.FolderStorage
 * datatransfer.storage.SftpStorage
 * datatransfer.storage.S3Storage
-* datatransfer.storage.RedisStorage  
+* datatransfer.storage.RedisStorage
 
 * Also ensure that the source and destination paths have the correct leading and
 trailing slashes, this will depend on the storage type and the OS. See the
@@ -245,6 +248,30 @@ configure the settings associated with the target storage type.
 |WRITE_REDIS_PASSWORD*       | pass                  | Password for redis      |
 +----------------------------+-----------------------+-------------------------+
 
+Message queue settings
+"""""""""""""""""""""""
+Provide connection settings for a message queue.
+Providing write settings will result in events being published in the format:
+{timestamp: timestamp, filename: filename}
+Currently only RabbitMQ is supported
+
++----------------------------+-----------------------+-------------------------+
+|Environment Variable        | Example               | Description             |
++============================+=======================+=========================+
+|WRITE_MQ                    | True                  | Enables writing to mq   |
++----------------------------+-----------------------+-------------------------+
+|WRITE_MQ_HOST               | localhost             | Message queue host      |
++----------------------------+-----------------------+-------------------------+
+|WRITE_MQ_PORT               | 5672                  | Message queue port      |
++----------------------------+-----------------------+-------------------------+
+|WRITE_MQ_PATH               | queue_name            | Queue to write to       |
++----------------------------+-----------------------+-------------------------+
+|WRITE_FTP_USERNAME          | user                  | Username for auth *     |
++----------------------------+-----------------------+-------------------------+
+|WRITE_FTP_PASSWORD          | password              | Password for auth       |
++----------------------------+-----------------------+-------------------------+
+
+* If required
 
 Running the application
 -----------------------
