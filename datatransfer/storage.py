@@ -779,13 +779,13 @@ class MessageQueue:
         try:
             if conf.get('username') is not None:
                 mq_credentials = pika.PlainCredentials(conf.get('username'), conf.get('password'))
-                connection = pika.BlockingConnection(pika.ConnectionParameters(host=conf.get('host'),
+                self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=conf.get('host'),
                                                                                port=conf.get('port'),
                                                                                credentials=mq_credentials))
             else:
-                connection = pika.BlockingConnection(pika.ConnectionParameters(host=conf.get('host'),
+                self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=conf.get('host'),
                                                                                port=int(conf.get('port'))))
-            self._channel = connection.channel()
+            self._channel = self.connection.channel()
             self._channel.confirm_delivery()
             LOGGER.debug('MessageQueue - Connection established')
             self.queue_name = conf.get('queue_name')
@@ -804,7 +804,11 @@ class MessageQueue:
         """
         return self._channel
 
-    def publish_event(self, file_name):
+    def _create_queue(self, queue_name):
+        if queue_name != self.queue_name:
+            self.channel().queue_declare(queue=queue_name, durable=True)
+
+    def publish_event(self, file_name, queue_name=None):
         """Publishes event to message queue.
         Message delivery to the broker is confirmed or delivery is re-attempted
         Parameters
@@ -817,12 +821,14 @@ class MessageQueue:
         bool
             returns True if event successfully published
         """
+        queue_name = queue_name if queue_name is not None else self.queue_name
+        self._create_queue(queue_name)
         event = utils.generate_event(file_name)
         msg_properties = pika.BasicProperties(delivery_mode=2)
         nack_counter = 0
         try:
             while not self.channel().basic_publish(exchange='',
-                                                   routing_key=self.queue_name,
+                                                   routing_key=queue_name,
                                                    body=event,
                                                    properties=msg_properties):
                 # nack received, retry,
@@ -836,20 +842,55 @@ class MessageQueue:
             LOGGER.exception('MessageQueue - Unexpected error publishing event ' + repr(err))
             raise
 
-def create_mq():
+    def consume(self, callback):
+        """Starts event consumption from configured queue
+
+        Parameters
+        ----------
+        callback: function
+            Function to be called upon receiving event. Function must ack when
+            successful.
+        """
+        try:
+            self.channel().basic_consume(callback, queue=self.queue_name)
+            self.channel().start_consuming()
+        except Exception as err:
+            LOGGER.exception('MessageQueue - Unexepcted error consuming ' + repr(err))
+
+    def exit(self):
+        self.connection.close()
+
+
+def create_mq(read_write):
     """Uses relevant conf settings to construct a MessageQueue
     object.
+
+    Paramters
+    ---------
+    wear_write: str
+        Decides whether to use read or write settings
 
     Returns
     -------
     obj:
         MessageQueue object.
     """
-    conf = {'host': settings.WRITE_MQ_HOST,
-            'port': int(settings.WRITE_MQ_PORT),
-            'queue_name': settings.WRITE_MQ_PATH,
-            'max_retries': int(settings.MAX_RETRIES)}
-    if settings.WRITE_MQ_USERNAME is not None:
-        conf["username"] = settings.WRITE_MQ_USERNAME
-        conf["password"] = settings.WRITE_MQ_PASSWORD
+    if read_write.capitalize() == 'Write':
+        conf = {'host': settings.WRITE_MQ_HOST,
+                'port': int(settings.WRITE_MQ_PORT),
+                'queue_name': settings.WRITE_MQ_PATH,
+                'max_retries': int(settings.MAX_RETRIES)}
+        if settings.WRITE_MQ_USERNAME is not None:
+            conf["username"] = settings.WRITE_MQ_USERNAME
+            conf["password"] = settings.WRITE_MQ_PASSWORD
+    elif read_write.capitalize() == "Read":
+        conf = {'host': settings.READ_MQ_HOST,
+                'port': int(settings.READ_MQ_PORT),
+                'queue_name': settings.READ_MQ_PATH,
+                'max_retries': int(settings.MAX_RETRIES)}
+        if settings.WRITE_MQ_USERNAME is not None:
+            conf["username"] = settings.READ_MQ_USERNAME
+            conf["password"] = settings.READ_MQ_PASSWORD
+    else:
+        raise ValueError('Incorrect value supplied for read_write')
     return MessageQueue(conf)
