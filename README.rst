@@ -253,6 +253,8 @@ Message queue settings
 Provide connection settings for a message queue.
 Providing write settings will result in events being published in the format:
 {timestamp: timestamp, filename: filename}
+Providing read settings will result data transfer consuming from a specified
+queue and moving files as events are consumed.
 Currently only RabbitMQ is supported
 
 +----------------------------+-----------------------+-------------------------+
@@ -266,9 +268,23 @@ Currently only RabbitMQ is supported
 +----------------------------+-----------------------+-------------------------+
 |WRITE_MQ_PATH               | queue_name            | Queue to write to       |
 +----------------------------+-----------------------+-------------------------+
-|WRITE_FTP_USERNAME          | user                  | Username for auth *     |
+|WRITE_MQ_USERNAME           | user                  | Username for auth *     |
 +----------------------------+-----------------------+-------------------------+
-|WRITE_FTP_PASSWORD          | password              | Password for auth       |
+|WRITE_MQ_PASSWORD           | password              | Password for auth *     |
++----------------------------+-----------------------+-------------------------+
+|READ_MQ                     | True                  | Enables writing to mq   |
++----------------------------+-----------------------+-------------------------+
+|READ_MQ_HOST                | localhost             | Message queue host      |
++----------------------------+-----------------------+-------------------------+
+|READ_MQ_PORT                | 5672                  | Message queue port      |
++----------------------------+-----------------------+-------------------------+
+|READ_MQ_PATH                | queue_name            | Queue to consume from   |
++----------------------------+-----------------------+-------------------------+
+|READ_MQ_USERNAME            | user                  | Username for auth *     |
++----------------------------+-----------------------+-------------------------+
+|READ_MQ_PASSWORD            | password              | Password for auth *     |
++----------------------------+-----------------------+-------------------------+
+|READ_MQ_REPUBLISH_QUEUE     | new_queue             | Publishes event to new queue|
 +----------------------------+-----------------------+-------------------------+
 
 * If required
