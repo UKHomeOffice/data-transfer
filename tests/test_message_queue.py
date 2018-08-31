@@ -45,8 +45,22 @@ class TestMessageQueue(unittest.TestCase):
             mq.publish_event('an_event')
 
     def test_create_mq(self):
-        mq = create_mq()
+        mq = create_mq("write")
         self.assertIsNotNone(mq.channel())
+
+    def test_create_mq_non_readwrite(self):
+        with self.assertRaises(ValueError):
+            mq= create_mq('fail')
+
+    def test_consumption(self):
+        self.setup()
+        self.channel.basic_consume = MagicMock()
+        self.channel.start_consuming = MagicMock()
+        callback = MagicMock()
+        mq = MessageQueue(self.conf, pika=self.pika)
+        mq.consume(callback)
+        self.channel.basic_consume.assert_called_with(callback, queue=self.conf["queue_name"])
+        self.channel.start_consuming.assert_called()
 
 
 if __name__ == "__main__":
