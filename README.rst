@@ -78,9 +78,8 @@ The project's tests require the following dependencies:
 For local development and testing, we suggest running Docker images. The following
 will meet the test dependencies and match the default env vars::
 
-```
-docker-compose up -d
-```
+    docker-compose up -d
+
 
 Test
 """"
