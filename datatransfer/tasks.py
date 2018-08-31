@@ -2,6 +2,7 @@
 
 import logging
 import os
+import json
 from datatransfer import settings
 from datatransfer import storage #This is required - ignore linter
 from datatransfer import utils
@@ -148,6 +149,53 @@ def build_dest_str(dest):
         dest = dest + sep + settings.TMP_FOLDER_NAME
     return dest
 
+def move_file(file_name, source=settings.INGEST_SOURCE_PATH,
+                         dest=settings.INGEST_DEST_PATH,
+                         copy_files=settings.COPY_FILES):
+    """Moves or copies a specified file from the specified source location
+    to the specified destination location
+
+    Parameters
+    ----------
+    file_name: str
+        Name of file to be moved
+    """
+    try:
+        dest = build_dest_str(dest)
+        read_storage = storage_type(source, 'r')
+        write_storage = storage_type(dest, 'w')
+    except Exception as err:
+        LOGGER.exception('Main - Error with storage ' + repr(err))
+        raise
+    LOGGER.debug('PROCESS FILE ' + repr(file_name))
+    if file_name == '':
+        pass
+    try:
+        contents = read_storage.read_file(file_name)
+        write_storage.write_file(file_name, contents)
+        if copy_files.capitalize() == "False":
+            read_storage.delete_file(file_name)
+        if not settings.WRITE_STORAGE_TYPE.endswith(('S3Storage', 'RedisStorage')):
+            write_storage.move_files()
+
+    except Exception as err:
+        LOGGER.exception('Task - Error with file read/write :' + repr(err))
+        raise
+
+def move_file_callback(ch, method, properties, body):
+    """Function to be passed as a callback for event consumption.
+    Gets filename from mq event, attempts to move file and acks if successful.
+    """
+    file_name = json.loads(body.decode('utf-8'))["filename"]
+    move_file(file_name)
+    re_publish = settings.READ_MQ_REPUBLISH_QUEUE
+    if re_publish is not None:
+        mq = storage.create_mq("read")
+        mq.publish_event(file_name, queue_name=re_publish)
+        mq.exit()
+        LOGGER.debug('MessageQueue - File moved, published to ' + re_publish)
+    ch.basic_ack(delivery_tag = method.delivery_tag)
+
 
 def process_files(source=settings.INGEST_SOURCE_PATH,
                   dest=settings.INGEST_DEST_PATH,
@@ -182,27 +230,19 @@ def process_files(source=settings.INGEST_SOURCE_PATH,
 
     if settings.WRITE_MQ.capitalize() == "True":
         LOGGER.info('Main - Publish to MessageQueue: True')
-        mq = storage.create_mq()
+        mq = storage.create_mq("write")
         for file_name in read_storage.list_dir():
             mq.publish_event(file_name)
+            LOGGER.debug('Main - Published {0}'.format(file_name))
+        mq.exit()
     else:
-        files = read_storage.list_dir()[:settings.MAX_FILES_BATCH]
-        LOGGER.debug('Task - List directory successful')
-        for file_name in files:
-            LOGGER.debug('PROCESS FILE ' + repr(file_name))
-            if file_name == '':
-                continue
-            try:
-                contents = read_storage.read_file(file_name)
-                write_storage.write_file(file_name, contents)
-                if copy_files.capitalize() == "False":
-                    read_storage.delete_file(file_name)
-                if not settings.WRITE_STORAGE_TYPE.endswith(('S3Storage', 'RedisStorage')):
-                    write_storage.move_files()
-
-            except Exception as err:
-                LOGGER.exception('Task - Error with file read/write :' + repr(err))
-                raise
+        if settings.READ_MQ.capitalize() == "True":
+            mq = storage.create_mq("read")
+            mq.consume(callback=move_file_callback)
+        else:
+            files = read_storage.list_dir()[:settings.MAX_FILES_BATCH]
+            for file_name in files:
+                move_file(file_name, copy_files=copy_files)
 
     read_storage.exit()
     write_storage.exit()
