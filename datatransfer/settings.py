@@ -15,12 +15,12 @@ READ_STORAGE_TYPE = os.environ.get('READ_STORAGE_TYPE', 'datatransfer.storage.Fo
 WRITE_STORAGE_TYPE = os.environ.get('WRITE_STORAGE_TYPE', 'datatransfer.storage.FolderStorage')
 
 # Env's for FTP server config. Allows for two configs for read and write.
-READ_FTP_HOST = os.environ.get('READ_FTP_HOST', 'sftp_server')
+READ_FTP_HOST = os.environ.get('READ_FTP_HOST', 'localhost')
 READ_FTP_USER = os.environ.get('READ_FTP_USER', 'foo')
 READ_FTP_PASSWORD = os.environ.get('READ_FTP_PASSWORD', 'pass')
 READ_FTP_PORT = os.environ.get('READ_FTP_PORT', '22')
 
-WRITE_FTP_HOST = os.environ.get('WRITE_FTP_HOST', 'sftp_server')
+WRITE_FTP_HOST = os.environ.get('WRITE_FTP_HOST', 'localhost')
 WRITE_FTP_USER = os.environ.get('WRITE_FTP_USER', 'foo')
 WRITE_FTP_PASSWORD = os.environ.get('WRITE_FTP_PASSWORD', 'pass')
 WRITE_FTP_PORT = os.environ.get('WRITE_FTP_PORT', '2222')
@@ -29,14 +29,14 @@ WRITE_FTP_PORT = os.environ.get('WRITE_FTP_PORT', '2222')
 READ_AWS_ACCESS_KEY_ID = os.environ.get('READ_AWS_ACCESS_KEY_ID', 'accessKey1')
 READ_AWS_SECRET_ACCESS_KEY = os.environ.get('READ_AWS_SECRET_ACCESS_KEY', 'verySecretKey1')
 READ_AWS_S3_BUCKET_NAME = os.environ.get('READ_AWS_S3_BUCKET_NAME', 'aws-ingest')
-READ_AWS_S3_HOST = os.environ.get('READ_AWS_S3_HOST', 'http://s3server:8000')
+READ_AWS_S3_HOST = os.environ.get('READ_AWS_S3_HOST', 'http://localhost:8000')
 READ_AWS_S3_REGION = os.environ.get('READ_AWS_S3_REGION', 'eu-west-2')
 READ_AWS_S3_ENCRYPT = os.environ.get('READ_AWS_S3_ENCRYPT', False)
 
 WRITE_AWS_ACCESS_KEY_ID = os.environ.get('WRITE_AWS_ACCESS_KEY_ID', 'accessKey1')
 WRITE_AWS_SECRET_ACCESS_KEY = os.environ.get('WRITE_AWS_SECRET_ACCESS_KEY', 'verySecretKey1')
 WRITE_AWS_S3_BUCKET_NAME = os.environ.get('WRITE_AWS_S3_BUCKET_NAME', 'aws-ingest')
-WRITE_AWS_S3_HOST = os.environ.get('WRITE_AWS_S3_HOST', 'http://s3server:8000')
+WRITE_AWS_S3_HOST = os.environ.get('WRITE_AWS_S3_HOST', 'http://localhost:8000')
 WRITE_AWS_S3_REGION = os.environ.get('WRITE_AWS_S3_REGION', 'eu-west-2')
 WRITE_AWS_S3_ENCRYPT = os.environ.get('WRITE_AWS_S3_ENCRYPT', False)
 

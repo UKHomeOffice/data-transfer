@@ -99,10 +99,10 @@ class TestStorage(unittest.TestCase):
         """Tests the sftp push"""
         conf = {
             'path': '/upload/tests/files/done/',
-            'FTP_HOST': 'sftp_server',
-            'FTP_USER': 'foo',
-            'FTP_PASSWORD': 'pass',
-            'FTP_PORT': '2222'
+            'FTP_HOST': settings.READ_FTP_HOST,
+            'FTP_USER': settings.READ_FTP_USER,
+            'FTP_PASSWORD': settings.READ_FTP_PASSWORD,
+            'FTP_PORT': settings.READ_FTP_PORT
         }
         SftpStorage(conf)
 
@@ -111,10 +111,10 @@ class TestStorage(unittest.TestCase):
         """Tests the sftp push"""
         conf = {
             'path': '/upload/tests/files/tmp',
-            'FTP_HOST': 'sftp_server',
-            'FTP_USER': 'foo',
-            'FTP_PASSWORD': 'pass',
-            'FTP_PORT': '2222'
+            'FTP_HOST': settings.READ_FTP_HOST,
+            'FTP_USER': settings.READ_FTP_USER,
+            'FTP_PASSWORD': settings.READ_FTP_PASSWORD,
+            'FTP_PORT': settings.READ_FTP_PORT
         }
         self.setup()
         storage = SftpStorage(conf)
@@ -129,10 +129,10 @@ class TestStorage(unittest.TestCase):
         """test the sftp list dir"""
         conf = {
             'path': '/upload/tests/files',
-            'FTP_HOST': 'sftp_server',
-            'FTP_USER': 'foo',
-            'FTP_PASSWORD': 'pass',
-            'FTP_PORT': '2222'
+            'FTP_HOST': settings.READ_FTP_HOST,
+            'FTP_USER': settings.READ_FTP_USER,
+            'FTP_PASSWORD': settings.READ_FTP_PASSWORD,
+            'FTP_PORT': settings.READ_FTP_PORT
         }
 
         self.setup()
@@ -231,10 +231,10 @@ class TestStorage(unittest.TestCase):
     def test_move_file_callback(self):
         conf = {
             'path': '/upload/tests/files/tmp',
-            'FTP_HOST': 'sftp_server',
-            'FTP_USER': 'foo',
-            'FTP_PASSWORD': 'pass',
-            'FTP_PORT': '2222'
+            'FTP_HOST': settings.READ_FTP_HOST,
+            'FTP_USER': settings.READ_FTP_USER,
+            'FTP_PASSWORD': settings.READ_FTP_PASSWORD,
+            'FTP_PORT': settings.READ_FTP_PORT
         }
         self.setup()
         storage = SftpStorage(conf)

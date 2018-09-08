@@ -25,7 +25,7 @@ services:
     command: --endpoint-url=http://s3server:8000 s3 mb s3://aws-ingest
 
   rabbitmq:
-    image: rabbitmq:3
+    image: rabbitmq:3-management
     ports:
       - "5672:5672"
       - "15672:15672"
