@@ -18,7 +18,7 @@ WRITE_STORAGE_TYPE = os.environ.get('WRITE_STORAGE_TYPE', 'datatransfer.storage.
 READ_FTP_HOST = os.environ.get('READ_FTP_HOST', 'localhost')
 READ_FTP_USER = os.environ.get('READ_FTP_USER', 'foo')
 READ_FTP_PASSWORD = os.environ.get('READ_FTP_PASSWORD', 'pass')
-READ_FTP_PORT = os.environ.get('READ_FTP_PORT', '22')
+READ_FTP_PORT = os.environ.get('READ_FTP_PORT', '2222')
 
 WRITE_FTP_HOST = os.environ.get('WRITE_FTP_HOST', 'localhost')
 WRITE_FTP_USER = os.environ.get('WRITE_FTP_USER', 'foo')
@@ -48,16 +48,16 @@ READ_MQ = os.environ.get('READ_MQ', "False")
 READ_MQ_HOST = os.environ.get('READ_MQ_HOST', 'localhost')
 READ_MQ_PORT = os.environ.get('READ_MQ_PORT', '5672')
 READ_MQ_PATH = os.environ.get('READ_MQ_PATH', 'a_path')
-READ_MQ_USERNAME = os.environ.get('READ_MQ_USERNAME', None)
-READ_MQ_PASSWORD = os.environ.get('READ_MQ_PASSWORD', None)
+READ_MQ_USERNAME = os.environ.get('READ_MQ_USERNAME', 'user')
+READ_MQ_PASSWORD = os.environ.get('READ_MQ_PASSWORD', 'password')
 READ_MQ_REPUBLISH_QUEUE = os.environ.get('READ_MQ_REPUBLISH_QUEUE', None)
 
 WRITE_MQ = os.environ.get('WRITE_MQ', "False")
-WRITE_MQ_HOST = os.environ.get('WRITE_MQ_HOST', 'rabbitmq')
+WRITE_MQ_HOST = os.environ.get('WRITE_MQ_HOST', 'localhost')
 WRITE_MQ_PORT = os.environ.get('WRITE_MQ_PORT', '5672')
 WRITE_MQ_PATH = os.environ.get('WRITE_MQ_PATH', 'a_path')
-WRITE_MQ_USERNAME = os.environ.get('WRITE_MQ_USERNAME', None)
-WRITE_MQ_PASSWORD = os.environ.get('WRITE_MQ_PASSWORD', None)
+WRITE_MQ_USERNAME = os.environ.get('WRITE_MQ_USERNAME', 'user')
+WRITE_MQ_PASSWORD = os.environ.get('WRITE_MQ_PASSWORD', 'password')
 
 
 WRITE_REDIS_HOST = os.environ.get('WRITE_REDIS_HOST', 'localhost')
@@ -73,7 +73,7 @@ LOG_FILE_NAME = os.environ.get('LOG_FILE_NAME', 'data-transfer-app.log')
 USE_IAM_CREDS = os.environ.get('USE_IAM_CREDS', 'False')
 TMP_FOLDER_NAME = os.environ.get('TEMP_FOLDER_NAME', 'tmp')
 COPY_FILES = os.environ.get('COPY_FILES', 'False')
-MAX_RETRIES = os.environ.get('MAX_RETRIES', '10')
+MAX_RETRIES = os.environ.get('MAX_RETRIES', 10)
 
 #  Loggin config
 DICTLOGCONFIG = {

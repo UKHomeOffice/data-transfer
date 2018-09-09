@@ -1,15 +1,16 @@
 import unittest
 from datatransfer.storage import MessageQueue, create_mq
 from unittest.mock import MagicMock
+from datatransfer import settings
 
 class TestMessageQueue(unittest.TestCase):
     def setup(self):
-        self.conf = {'username': 'user',
-                     'password': 'password',
-                     'host': 'rabbitmq',
-                     'port': '5672',
-                     'max_retries': 10,
-                     'queue_name': 'a_test_queue'}
+        self.conf = {'username': settings.READ_MQ_USERNAME,
+                     'password': settings.READ_MQ_PASSWORD,
+                     'host': settings.READ_MQ_HOST,
+                     'port': settings.READ_MQ_PORT,
+                     'max_retries': settings.MAX_RETRIES,
+                     'queue_name': settings.READ_MQ_PATH}
         self.pika = MagicMock()
         self.pika.PlainCredentials.return_value = True
         connection = MagicMock()
@@ -26,7 +27,9 @@ class TestMessageQueue(unittest.TestCase):
 
     def test_connection_establish_no_auth(self):
         self.setup()
-        conf = {'host': 'rabbitmq', 'port': '5672', 'queue_name': 'a'}
+        conf = {'host': settings.READ_MQ_HOST,
+                'port': settings.READ_MQ_PORT,
+                'queue_name': settings.READ_MQ_PATH}
         mq = MessageQueue(conf, pika=self.pika)
         self.pika.PlainCredentials.assert_not_called()
         self.assertIsNotNone(mq.channel())
