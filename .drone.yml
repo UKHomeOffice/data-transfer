@@ -24,8 +24,8 @@ pipeline:
       - export WRITE_FTP_HOST=sftp_server
       - export READ_AWS_S3_HOST=http://s3server:8000
       - export WRITE_AWS_S3_HOST=http://s3server:8000
-      - export READ_MQ_HOST=redis
-      - export WRITE_MQ_HOST=redis
+      - export READ_MQ_HOST=rabbitmq
+      - export WRITE_MQ_HOST=rabbitmq
       - pytest tests
 
   build:
