@@ -22,8 +22,8 @@ pipeline:
       - export PYTHONPATH=.
       - export READ_FTP_HOST=sftp_server
       - export WRITE_FTP_HOST=sftp_server
-      - export READ_AWS_S3_HOST=s3server
-      - export WRITE_AWS_S3_HOST=s3server
+      - export READ_AWS_S3_HOST=http://s3server:8000
+      - export WRITE_AWS_S3_HOST=http://s3server:8000
       - pytest tests
 
   build:
