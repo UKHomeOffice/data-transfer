@@ -20,6 +20,10 @@ pipeline:
       - . .virtualenvs/data-transfer/bin/activate
       - pip3 install -e . -r requirements.txt
       - export PYTHONPATH=.
+      - export READ_FTP_HOST=sftp_server
+      - export WRITE_FTP_HOST=sftp_server
+      - export READ_AWS_S3_HOST=s3server
+      - export WRITE_AWS_S3_HOST=s3server
       - pytest tests
 
   build:
