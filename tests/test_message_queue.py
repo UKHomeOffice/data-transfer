@@ -48,6 +48,7 @@ class TestMessageQueue(unittest.TestCase):
             mq.publish_event('an_event')
 
     def test_create_mq(self):
+        self.setup()
         mq = create_mq("write")
         self.assertIsNotNone(mq.channel())
 
