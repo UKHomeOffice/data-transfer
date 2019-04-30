@@ -24,9 +24,9 @@ setup(
     license="MIT",
     long_description=readme(),
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-    install_requires=['sqlalchemy==1.0.14', 'coverage==4.4.2', 'pytest==3.2.5',
+    install_requires=['sqlalchemy==1.3.0', 'coverage==4.4.2', 'pytest==3.2.5',
                       'pytest-cov==2.5.1', 'pathlib==1.0.1', 'boto3==1.4.8',
-                      'schedule==0.5.0', 'paramiko==2.4.0'],
+                      'schedule==0.5.0', 'paramiko==2.4.2'],
     scripts=['bin/data-transfer'],
     url="https://github.com/UKHomeOffice/data-transfer",
 )
