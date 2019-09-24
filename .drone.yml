@@ -32,6 +32,9 @@ pipeline:
       branch: master
       event: push
 
+  sonar-scanner:
+    image: quay.io/ukhomeofficedigital/sonar-scanner:v3.0.3
+
   image_to_quay:
     image: docker:17.09.1
     secrets:
